@@ -126,3 +126,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+reference/glove.6B.100d.txt
+data/raw/Grocery_and_Gourmet_Food.json.gz
+data/raw/Grocery_and_Gourmet_Food_5.json.gz
+data/raw/meta_Grocery_and_Gourmet_Food.json.gz

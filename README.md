@@ -12,7 +12,11 @@ Here is where you state the business problem you were trying to solve
 
 
 ### Data:
-Data can include source and high-level description (e.g. # obs)
+A subset of the updated Amazon Reviews dataset (Jianmo et al 2019)
+
+**Justifying recommendations using distantly-labeled reviews and fined-grained aspects**
+Jianmo Ni, Jiacheng Li, Julian McAuley
+*Empirical Methods in Natural Language Processing (EMNLP)*, 2019
 
 
 ## Methods
