@@ -276,6 +276,7 @@ def get_groups_freqs_wordclouds(df, ngrams=1, group_col='target-rating', text_co
 def make_wordclouds_from_freqs(groups_dict,  grp1_key="Low", grp2_key="High",
                                grp1_cmap = "Reds", grp2_cmap ="Greens",stopwords=None, 
                                width=800, height=1000, min_word_length=2, max_words=200,
+                               min_font_size=6,
                                cloud_kws = {},
                                plot_clouds=True,
                                figsize=(8, 5), grp1_label=None, grp2_label=None, title=None,
@@ -288,6 +289,7 @@ def make_wordclouds_from_freqs(groups_dict,  grp1_key="Low", grp2_key="High",
                           width = width,
                           height = height, stopwords=stopwords,
                           min_word_length = min_word_length,
+                          min_font_size=min_font_size,
                         **cloud_kws)
 
     # Slice groups from dict

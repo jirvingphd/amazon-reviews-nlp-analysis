@@ -10,7 +10,8 @@ import custom_functions as fn
 import plotly.express as px
 
 # Changing the Layout
-st.set_page_config( layout="wide")
+st.set_page_config( #layout="wide", 
+                   page_icon="⭐️Amazon Reviews NLP Dash")
 
 
 
@@ -95,7 +96,7 @@ ngram_map = {'Unigrams/Tokens (1 Word)':1,
             'Trigrams (3 words)':3,
             'Quadgrams (4 words)':4}
 ngram_selection = st.sidebar.radio("Select ngrams", options=list(ngram_map.keys()), #['Single Words','Bigrams','Trigrams','Quadgrams'],
-                        index=0)
+                        index=1)
 ngram_n = ngram_map[ngram_selection]
 # Select custom stopwords
 add_stopwords_str = st.sidebar.text_input("Enter list of words to exclude:",value='five,one,star')
@@ -254,7 +255,13 @@ if show_wordclouds:
     group_texts = fn_get_groups_freqs_wordclouds(df,ngrams=ngram_n, as_freqs=True,group_col='target-rating', text_col = text_col_selection,
                                             stopwords=stopwords_list )
     # preview_group_freqs(group_texts)
-    fig  = fn.make_wordclouds_from_freqs(group_texts,stopwords=stopwords_list)
+    
+    col1, col2 = st.columns(2)
+    min_font_size = col1.number_input("Minumum Font Size",min_value=4, max_value=50,value=6, step=1)
+    max_words = col2.number_input('Maximum # of Words', min_value=10, max_value=1000, value=200, step=5)
+    
+    fig  = fn.make_wordclouds_from_freqs(group_texts,stopwords=stopwords_list,min_font_size=min_font_size, max_words=max_words)
+    
     st.pyplot(fig)
 else:
     st.empty()
