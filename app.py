@@ -107,7 +107,7 @@ st.sidebar.divider()
 
 st.sidebar.subheader("Dev Options")
 dev_show_fpaths = st.sidebar.checkbox('[Dev] Show FPATHS?',value=False)
-dev_show_frame = st.sidebar.checkbox("[Dev] Show frame?",value=True)
+dev_show_frame = st.sidebar.checkbox("[Dev] Show frame?",value=False)
 
 if dev_show_fpaths:
     FPATHS
