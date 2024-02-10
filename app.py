@@ -83,7 +83,7 @@ st.sidebar.header("Text Preprocessing Options")
 st.sidebar.markdown(">*Select form of text for NLP EDA visuals.*")
 
 text_col_map  ={"Original Text":'review-text-full',
-                "Tokenized Text (no stopwords)":'',
+                # "Tokenized Text (no stopwords)":'',
             'Lemmatzied Text':'lemmas'
             }
 text_preprocessing_selection  =  st.sidebar.radio("Select Tokenization",options=list(text_col_map.keys()),# ['Original','Lemmas','Cleaned Tokens'],
