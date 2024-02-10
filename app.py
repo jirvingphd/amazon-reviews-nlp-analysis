@@ -8,7 +8,8 @@ import tensorflow as tf
 from PIL import Image
 import custom_functions as fn
 import plotly.express as px
-
+import plotly.io as pio
+pio.templates.default='streamlit'
 # Changing the Layout
 st.set_page_config( #layout="wide", 
                    page_icon="⭐️Amazon Reviews NLP Dash")
@@ -84,7 +85,7 @@ st.sidebar.header("Text Preprocessing Options")
 st.sidebar.markdown(">*Select form of text for NLP EDA visuals.*")
 
 text_col_map  ={"Original Text":'review-text-full',
-                # "Tokenized Text (no stopwords)":'',
+                "Tokenized Text (no stopwords)":'tokens',
             'Lemmatzied Text':'lemmas'
             }
 text_preprocessing_selection  =  st.sidebar.radio("Select Tokenization",options=list(text_col_map.keys()),# ['Original','Lemmas','Cleaned Tokens'],
@@ -231,19 +232,20 @@ def fn_get_groups_freqs_wordclouds(df,ngrams=ngram_n, as_freqs=True,
 ## MENU FOR WORDCLOUDS
 if show_wordclouds:
     st.markdown("👈 Change Text Preprocessing Options on the sidebar.")
-    # wc_col1, wc_col2 = st.columns(2)
 
+
+
+    # wc_col1, wc_col2 = st.columns(2)
     # text_preprocessing_selection  =  wc_col1.radio("Select Text Processing",options=list(text_col_map.keys()),# ['Original','Lemmas','Cleaned Tokens'],
     #                                         index=0)
     # text_col_selection = text_col_map[text_preprocessing_selection]
-
 
     # ## Select # of words/ngrams
     # ngram_map = {'Single Words':1,
     #             'Bigrams':2,
     #             'Trigrams':3,
     #             'Quadgrams':4}
-    # ngram_selection = wc_col2.radio("Select ngrams", options=list(ngram_map.keys()), #['Single Words','Bigrams','Trigrams','Quadgrams'],
+    # ngram_selection = wc_cofl2.radio("Select ngrams", options=list(ngram_map.keys()), #['Single Words','Bigrams','Trigrams','Quadgrams'],
     #                         index=0)
     # ngram_n = ngram_map[ngram_selection]
 
@@ -265,9 +267,19 @@ if show_wordclouds:
     st.pyplot(fig)
 else:
     st.empty()
-## Compare n-grams 
+ 
 st.divider()
 
+
+## Add creating ngrams
+st.subheader('N-Grams')
+
+# ngrams = st.radio('n-grams', [2,3,4],horizontal=True,index=1)
+top_n = st.select_slider('Compare Top # Ngrams',[10,15,20,25],value=15)
+## Compare n-grams
+ngrams_df = fn.show_ngrams(df,top_n, ngram_n,text_col_selection,stopwords_list=stopwords_list)
+fig = fn.plotly_group_ngrams_df(ngrams_df,show=False, title=f"Top {top_n} Most Common ngrams")
+st.plotly_chart(fig)
 
 ## scattertext
 @st.cache_data

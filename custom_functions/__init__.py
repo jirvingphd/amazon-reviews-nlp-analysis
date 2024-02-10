@@ -1,4 +1,4 @@
-
+from IPython.display import display
 def mute_color(color_name, saturation_adjustment=0.5, lightness_adjustment=1.2):
     """
     Mutes a given CSS color name.
@@ -152,12 +152,17 @@ def compare_ngram_measures_df(group1_tokens, group2_tokens, ngrams=2,
     
     
     
-def plot_group_ngrams( ngram_df, group1_colname = 'Low Ratings',
-                      group2_colname= 'High Ratings',words_colname="Words",
+def plot_group_ngrams( ngram_df, group1_colname = None,
+                      group2_colname= None,words_colname="Words",
                        plot_col="Raw Freq",top_n=None,
                       color_group1 = 'crimson', color_group2="green",
                       figsize=(12, 8),suptitle_kws={},suptitle_y= 1.01, rotation = 45):
     import matplotlib.pyplot as plt
+    columns_top_level = ngram_df.columns.get_level_values(0)
+    if group1_colname is None:
+        group1_colname = columns_top_level[0]
+    if group2_colname is None:
+        group2_colname = columns_top_level[-1]
     ### Plotting as Bar Graph
     if top_n == None:
         top_n = len(ngram_df)
@@ -201,8 +206,14 @@ def plot_group_ngrams( ngram_df, group1_colname = 'Low Ratings',
         ax.set_xlabel(plot_col) # Add the Measure label
         ax.spines["right"].set_visible(False)  # Remove the right spine
         
+        # Rotate and align tick labels without using set_xticklabels
+        for label in ax.get_xticklabels():
+            label.set_rotation(rotation)
+            label.set_ha('right')  # 'right' aligns the end of the label text to the tick position
         # Fix label rotation
-        ax.set_xticklabels(ax.get_xticklabels(), rotation=rotation, ha='right')
+        # ax.set_xticklabels(ax.get_xticklabels(), rotation=rotation, ha='right')
+        # ax.tick_params(axis='x', rotation=rotation, labelright=True)
+
     fig.tight_layout()
     return fig
 
@@ -239,9 +250,11 @@ def get_groups_freqs_wordclouds(df, ngrams=1, group_col='target-rating', text_co
                                 as_freqs=True, as_tokens=False, tokenizer=nltk.casual_tokenize, 
                                 drop_groups=[], stopwords=[*STOPWORDS]):
     """Get frequencies or raw texts for word clouds by group."""
-    # Filter out unwanted groups upfront
-    df_filtered = df[~df[group_col].isin(drop_groups)]
-    
+    if len(drop_groups) == 0:
+        # Filter out unwanted groups upfront
+        df_filtered = df[~df[group_col].isin(drop_groups)]
+    else:
+        df_filtered=df    
     # Make stopwords a set
     stopwords = set(stopwords)
     
@@ -372,3 +385,81 @@ def get_stopwords_from_string(stopwords_to_add = None, default_stopwords=True, )
     # Combine custom_stopwords
     combined_stopwords = [*custom_stopwords, *add_stopwords]
     return combined_stopwords
+
+
+def show_ngrams(df, top_n, ngrams, text_col_selection, stopwords_list,
+                 grp1_key="Low", grp2_key="High",measure='raw_freq' ,
+               min_freq=1):
+
+    group_texts = get_groups_freqs_wordclouds(df, ngrams=1, #grp1_key=grp1_key, grp2_key =grp2_key,
+                                              as_freqs=False, as_tokens=True, group_col='target-rating', 
+                                              text_col = text_col_selection,
+                                         stopwords=stopwords_list) #testing stopwords
+    try:
+        return  compare_ngram_measures_df(group_texts[grp1_key], group_texts[grp2_key],
+                                             measure=measure, ngrams=ngrams,min_freq=min_freq,top_n=top_n,
+                                            group1_name=grp1_key, group2_name=grp2_key)
+    except Exception as e:
+        display(e)
+        
+
+def plotly_group_ngrams_df(
+    ngrams_df,
+    mi_colname_1="Low",
+    mi_colname_2="High",
+    color_1 = "red",
+    color_2 = "green",
+    height=600,
+    width=1000,
+    title="Top n-grams per Group",
+    show=False,
+    ):  
+    import plotly.graph_objects as go
+    from plotly.subplots import make_subplots
+    
+    fig = make_subplots(
+        rows=1,
+        cols=2,
+        subplot_titles=(mi_colname_1, mi_colname_2),
+        horizontal_spacing=0.1
+        # margin=dict(l=40, r=40, t=40, b=40),
+        # Optional titles
+    )
+
+
+    # Set color list for indexing with i
+    col_color_list = [color_1, color_2]
+    # Slice the columns for the current group
+    for i, group_name in enumerate([mi_colname_1, mi_colname_2]):
+        group_data = ngrams_df[group_name]
+        word_col, val_col = group_data.columns
+
+        # Sort values so bars appear in correct order
+        group_data = group_data.sort_values(by=val_col)
+
+        # Add to the fifugre
+        fig.add_trace(
+            go.Bar(
+                x=group_data[val_col],
+                y=group_data[word_col],
+                orientation="h",
+                name=group_name,
+                marker=dict(color=col_color_list[i]),
+            ),
+            row=1,
+            col=i + 1,
+        )
+
+    # Update layout if necessary (optional)
+    fig.update_layout(
+        height=height,
+        width=width,
+        showlegend=False,  # overwrite=True,
+        title_text=title,
+    )
+    fig.update_yaxes(automargin=True)  # , autorange='left+width+right')#,row=1,col=1)
+
+    # Show plot
+    if show == True:
+        fig.show()
+    return fig
