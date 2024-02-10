@@ -60,7 +60,7 @@ product= meta_df.iloc[0]
 # st.divider()
 st.header("Amazon Customer Reviews Analysis")
 
-st.image(FPATHS['images']['banner_png'],width=700,use_column_width='never')
+st.image(FPATHS['images']['banner_png'],width=700,use_column_width='always')
 st.divider()
 ## Product metasata
 st.markdown("##### ***👈 Select the Display Options to enable/disable app components.***")
