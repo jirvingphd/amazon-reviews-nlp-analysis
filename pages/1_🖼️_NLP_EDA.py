@@ -94,10 +94,10 @@ st.divider()
 st.sidebar.header("Display Options")
 st.sidebar.markdown(">*Select visualizations for main pane.*")
 show_product= st.sidebar.checkbox("Show Product Information", value=True)
-show_review_graphs = st.sidebar.checkbox("Show rating distibutions.", value=True)
-show_yearly =st.sidebar.checkbox('Show yearly trends in reviews', value=True)
+# show_review_graphs = st.sidebar.checkbox("Show rating distibutions.", value=True)
+# show_yearly =st.sidebar.checkbox('Show yearly trends in reviews', value=True)
 show_wordclouds = st.sidebar.checkbox('Show Word Couds', value=True)
-show_scattertext = st.sidebar.checkbox("Show ScatterText Visual", value=False)
+# show_scattertext = st.sidebar.checkbox("Show ScatterText Visual", value=False)
 st.sidebar.divider()
 
 st.sidebar.header("Text Preprocessing Options")
@@ -170,67 +170,9 @@ else:
     col1.empty()
     col2.empty()
 
-st.divider()
+# st.divider()
 
 # st.image(FPATHS['images']['selected-product_jpg'])
-
-## Distrubtion of reviews
-# label: color
-colors = {
-    1: "red",
-    2: "orange",
-    3: "yellow",
-    4:'limegreen',
-    5:'green'}
-muted_colors = fn.mute_colors_by_key(colors,keys_to_mute=None, saturation_adj=.7, lightness_adj=3)
-df = df.sort_values('year', ascending=False)
-
-
-st.markdown("#### Distribution of Star-Ratings for Selected Product")
-
-if show_review_graphs==True:
-    # show_histogram = st.checkbox("Show overall ratings distribution.")
-
-    # if show_histogram:
-
-        ## Plot histogram
-    st.plotly_chart(px.histogram(df, 'overall', color='overall',width=600,
-                                # title='# of Reviews per Star Rating',
-                                color_discrete_map=muted_colors))
-
-else:
-    st.empty()
-
-st.divider()
-
-st.markdown("#### Change in Average Ratings By Year")
-if show_yearly==True:
-
-    ## Plot average scatter with trendline by year
-    avg_by_year = get_average_rating_by_year(df)
-    st.plotly_chart(px.scatter(avg_by_year, trendline='ols', width=800, height=400,
-                            # title='Average Rating over Time'
-                            ))
-
-
-    st.divider()
-    st.markdown("#### Trend in Proportion of Star Ratings over Time")
-    # Plot counts by year
-    counts_by_year=  get_rating_percent_by_year(df)
-    stars_to_plot = st.multiselect('Ratings (Stars) to Include', options=list(counts_by_year.columns),
-                                default=[1,5])
-    # counts_by_year = counts_by_year.reset_index(drop=False)
-    melted_counts_by_year = get_rating_percent_by_year(df, melted=True)
-    melted_counts_by_year = melted_counts_by_year[melted_counts_by_year['Stars'].isin(stars_to_plot)]
-
-    st.plotly_chart(px.scatter(melted_counts_by_year, x='year', y='%', color='Stars',
-                            color_discrete_map=muted_colors,# title='Trend in Proportion of Star Ratings over Time',
-                            trendline='ols'))
-else:
-    st.empty()
-
-st.divider()
-# st.plotly_chart(px.histogram(df, 'overall', color='overall',title='# of Reviews per Star Rating',animation_frame='year'))
 
 
 ## word clouds
