@@ -126,15 +126,15 @@ stopwords_list = fn.get_stopwords_from_string(add_stopwords_str)
 st.sidebar.divider()
 
 
-st.sidebar.subheader("Dev Options")
-dev_show_fpaths = st.sidebar.checkbox('[Dev] Show FPATHS?',value=False)
-dev_show_frame = st.sidebar.checkbox("[Dev] Show frame?",value=False)
+# st.sidebar.subheader("Dev Options")
+# dev_show_fpaths = st.sidebar.checkbox('[Dev] Show FPATHS?',value=False)
+# dev_show_frame = st.sidebar.checkbox("[Dev] Show frame?",value=False)
 
-if dev_show_fpaths:
-    FPATHS
+# if dev_show_fpaths:
+#     FPATHS
     
-if dev_show_frame:
-    st.dataframe(df.head())
+# if dev_show_frame:
+#     st.dataframe(df.head())
 
 st.subheader("Product Information")
 
