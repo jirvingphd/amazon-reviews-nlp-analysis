@@ -128,7 +128,7 @@ ngram_selection = st.sidebar.radio("Select ngrams", options=list(ngram_map.keys(
                         index=1)
 ngram_n = ngram_map[ngram_selection]
 # Select custom stopwords
-add_stopwords_str = st.sidebar.text_input("Enter list of words to exclude:",value='five,one,star')
+add_stopwords_str = st.sidebar.text_input("Enter list of words to exclude:",value='five,one,star,angel, hair,miracle,noodle,shirataki,pasta')
 stopwords_list = fn.get_stopwords_from_string(add_stopwords_str)
 
 
