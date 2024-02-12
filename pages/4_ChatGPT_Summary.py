@@ -323,23 +323,23 @@ st.divider()
 ####### CHATBOT
 
 
-# # Create required session_state containers
-# if 'messages' not in st.session_state:
-#     st.session_state.messages=[]
+# Create required session_state containers
+if 'messages' not in st.session_state:
+    st.session_state.messages=[]
     
-# if 'API_KEY' not in st.session_state:
-#     st.session_state['API_KEY'] = os.environ['OPENAI_API_KEY'] # Could have user paste in via sidebar
+if 'API_KEY' not in st.session_state:
+    st.session_state['API_KEY'] = os.environ['OPENAI_API_KEY'] # Could have user paste in via sidebar
 
-# if 'conversation' not in st.session_state:
-#     st.session_state['conversation'] = None
+if 'conversation' not in st.session_state:
+    st.session_state['conversation'] = None
 
 
-# def reset():
-#     if 'messages' in st.session_state:
-#         st.session_state.messages=[]
+def reset():
+    if 'messages' in st.session_state:
+        st.session_state.messages=[]
 
-#     if 'conversation' in st.session_state:
-#         st.session_state['conversation'] = None
+    if 'conversation' in st.session_state:
+        st.session_state['conversation'] = None
 
 
 # # st.set_page_config(page_title="ChatGPT Clone", page_icon=':robot:')
@@ -428,7 +428,7 @@ if "placeholder" not in st.session_state:
     # st.session_state.text = st.session_state.text.upper()
      
 col1,col2=st.columns(2)
-flavor_name = col1.selectbox("Which type of chatbot?", key='flavor',options=list(flavor_options.keys()), index=0)#,on_change=set_placeholder)
+flavor_name = col1.selectbox("Which type of chatbot?", key='flavor',options=list(flavor_options.keys()), index=1)#,on_change=set_placeholder)
 # temp = col2.slider("Select model temperature:",min_value=0.0, max_value=2.0, value=0.1)
 temp=0.1
 reset_chat = st.sidebar.button("Clear history?")
@@ -459,7 +459,7 @@ def get_text():
 
 
 def get_text():
-    input_text = st.text_area("You: ", key='input', value ="Please give me a summary of what customers liked  and did not like about this product.")
+    input_text = st.text_area("You: ", key='input', value ="Please give me a summary of what customers liked  and did not like about this product. How can I make it a better product?")
     return input_text
 
 user_input=get_text()
