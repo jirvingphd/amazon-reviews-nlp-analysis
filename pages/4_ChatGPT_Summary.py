@@ -11,6 +11,9 @@ import plotly.express as px
 import plotly.io as pio
 pio.templates.default='streamlit'
 
+import os
+
+
 ### ChatBot Imports
 import streamlit as st 
 if st.__version__ <"1.31.0":
@@ -404,7 +407,7 @@ def load_chatgpt(temp,flavor_name):
     SystemMessage(content=flavor_options[flavor_name]['prompt']),
     SystemMessage(content=table_message)
     ]
-    return  ChatOpenAI(temperature=temp)
+    return  ChatOpenAI(temperature=temp,api_key=os.environ['OPENAI_API_KEY'])
 
 if "placeholder" not in st.session_state:
 
