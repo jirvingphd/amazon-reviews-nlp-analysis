@@ -1,4 +1,4 @@
-from IPython.display import display
+# from IPython.display import display
 def mute_color(color_name, saturation_adjustment=0.5, lightness_adjustment=1.2):
     """
     Mutes a given CSS color name.
