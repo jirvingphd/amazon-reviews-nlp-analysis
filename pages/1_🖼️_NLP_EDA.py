@@ -30,27 +30,26 @@ import json
 with open("config/filepaths.json") as f:
     FPATHS = json.load(f)
     
+    
+    
+## Title /header
+# st.header("Exploratory Data Analysis of Amazon Reviews ")
+# st.divider()
+st.header("NLP Exploratory Visualizations")
 
-    
-st.sidebar.subheader("Author Information")
-with open("app-assets/author-info.html") as f:
-    author_info = f.read()
-with st.sidebar.container():
-    components.html(author_info)#"""
-    
+# Setting sidebar controls ahead of time
+### TEXT SELECTION OPTIONS FOR SIDEBAR
+## Select which text column/preprocessing
+# st.sidebar.header("Display Options")
+# st.sidebar.markdown(">*Select visualizations for main pane.*")
+show_product= st.checkbox("Show Product Information", value=True)
+# show_review_graphs = st.sidebar.checkbox("Show rating distibutions.", value=True)
+# show_yearly =st.sidebar.checkbox('Show yearly trends in reviews', value=True)
+# show_wordclouds = st.sidebar.checkbox('Show Word Couds', value=True)
+# show_scattertext = st.sidebar.checkbox("Show ScatterText Visual", value=False)
+# st.sidebar.divider()
     
 
-    #     <ul>
-    #     <li>Analysis by James M. Irving, Ph.D.</li>
-    #     <li><a href="https://github.com/jirvingphd/amazon-reviews-nlp-analysis">📁Project Repository</a></li>
-    # <li><a href="https://www.linkedin.com/in/james-irving-phd" rel="nofollow noreferrer">
-    #     <img src="https://i.stack.imgur.com/gVE0j.png" alt="linkedin"> LinkedIn
-    # </a> </li>
-    # <li><a href="https://github.com/jirvingphd" rel="nofollow noreferrer">
-    #     <img src="https://i.stack.imgur.com/tskMh.png" alt="github"> Github
-    # </a></li>
-    # </ul>
-    # """)
     
 @st.cache_data    
 def load_df(fpath):
@@ -76,69 +75,17 @@ product= meta_df.iloc[0]
 
 
 
-## Title /header
-# st.header("Exploratory Data Analysis of Amazon Reviews ")
-# st.divider()
-st.header("Amazon Customer Reviews Analysis")
 
-st.image(FPATHS['images']['banner_png'],width=700,use_column_width='always')
-st.divider()
+# st.image(FPATHS['images']['banner_png'],width=700,use_column_width='always')
+# st.divider()
 ## Product metasata
-st.markdown("##### ***👈 Select the Display Options to enable/disable app components.***")
-st.divider()
+# st.markdown("##### ***👈 Select the Display Options to enable/disable app components.***")
+# st.divider()
 # st.subheader("Exploratory Analysis ")
 
-# Setting sidebar controls ahead of time
-### TEXT SELECTION OPTIONS FOR SIDEBAR
-## Select which text column/preprocessing
-st.sidebar.header("Display Options")
-st.sidebar.markdown(">*Select visualizations for main pane.*")
-show_product= st.sidebar.checkbox("Show Product Information", value=True)
-# show_review_graphs = st.sidebar.checkbox("Show rating distibutions.", value=True)
-# show_yearly =st.sidebar.checkbox('Show yearly trends in reviews', value=True)
-show_wordclouds = st.sidebar.checkbox('Show Word Couds', value=True)
-# show_scattertext = st.sidebar.checkbox("Show ScatterText Visual", value=False)
-st.sidebar.divider()
-
-st.sidebar.header("Text Preprocessing Options")
-st.sidebar.markdown(">*Select form of text for NLP EDA visuals.*")
-
-text_col_map  ={"Original Text":'review-text-full',
-                "Tokenized Text (no stopwords)":'tokens',
-            'Lemmatzied Text':'lemmas'
-            }
-text_preprocessing_selection  =  st.sidebar.radio("Select Tokenization",options=list(text_col_map.keys()),# ['Original','Lemmas','Cleaned Tokens'],
-                                            index=0)
-text_col_selection = text_col_map[text_preprocessing_selection]
-## Select # of words/ngrams
-ngram_map = {'Unigrams/Tokens (1 Word)':1,
-            'Bigrams (2 words)':2,
-            'Trigrams (3 words)':3,
-            'Quadgrams (4 words)':4}
-ngram_selection = st.sidebar.radio("Select ngrams", options=list(ngram_map.keys()), #['Single Words','Bigrams','Trigrams','Quadgrams'],
-                        index=1)
-ngram_n = ngram_map[ngram_selection]
-# Select custom stopwords
-add_stopwords_str = st.sidebar.text_input("Enter list of words to exclude:",value='five,one,star')
-stopwords_list = fn.get_stopwords_from_string(add_stopwords_str)
-
-
-st.sidebar.divider()
-
-
-# st.sidebar.subheader("Dev Options")
-# dev_show_fpaths = st.sidebar.checkbox('[Dev] Show FPATHS?',value=False)
-# dev_show_frame = st.sidebar.checkbox("[Dev] Show frame?",value=False)
-
-# if dev_show_fpaths:
-#     FPATHS
-    
-# if dev_show_frame:
-#     st.dataframe(df.head())
-
-st.subheader("Product Information")
 
 if show_product==True:
+    st.subheader("Product Information")
 
 
     # st.markdown(f'Product Title: ***{product["Title (Raw)"]}***')
@@ -170,13 +117,57 @@ else:
     col1.empty()
     col2.empty()
 
+
+
+
+
+st.sidebar.subheader("Text Preprocessing Options")
+# with st.container(border=True):
+st.sidebar.markdown(">*Select form of text for NLP EDA visuals.*")
+
+# col1,col2=st.columns(2)
+
+text_col_map  ={"Original Text":'review-text-full',
+                "Tokenized Text (no stopwords)":'tokens',
+            'Lemmatzied Text':'lemmas'
+            }
+text_preprocessing_selection  =  st.sidebar.radio("Select Tokenization",options=list(text_col_map.keys()),# ['Original','Lemmas','Cleaned Tokens'],
+                                            index=0)
+text_col_selection = text_col_map[text_preprocessing_selection]
+## Select # of words/ngrams
+ngram_map = {'Unigrams/Tokens (1 Word)':1,
+            'Bigrams (2 words)':2,
+            'Trigrams (3 words)':3,
+            'Quadgrams (4 words)':4}
+ngram_selection = st.sidebar.radio("Select ngrams", options=list(ngram_map.keys()), #['Single Words','Bigrams','Trigrams','Quadgrams'],
+                        index=1)
+ngram_n = ngram_map[ngram_selection]
+# Select custom stopwords
+add_stopwords_str = st.sidebar.text_area("Enter list of words to exclude:",value='five,one,star,angel,hair,miracle,noodles,shirataki,pasta')
+stopwords_list = fn.get_stopwords_from_string(add_stopwords_str)
+
+
+st.sidebar.divider()
+
+
+# st.sidebar.subheader("Dev Options")
+# dev_show_fpaths = st.sidebar.checkbox('[Dev] Show FPATHS?',value=False)
+# dev_show_frame = st.sidebar.checkbox("[Dev] Show frame?",value=False)
+
+# if dev_show_fpaths:
+#     FPATHS
+    
+# if dev_show_frame:
+#     st.dataframe(df.head())
+
+
 # st.divider()
 
 # st.image(FPATHS['images']['selected-product_jpg'])
 
 
 ## word clouds
-st.header("NLP EDA")
+
 st.divider()
 st.subheader("Word Clouds")
 
@@ -191,8 +182,8 @@ def fn_get_groups_freqs_wordclouds(df,ngrams=ngram_n, as_freqs=True,
     group_texts = fn.get_groups_freqs_wordclouds(**kwargs) #testing stopwords
     return group_texts
 ## MENU FOR WORDCLOUDS
-if show_wordclouds:
-    st.markdown("👈 Change Text Preprocessing Options on the sidebar.")
+
+
 
 
 
@@ -213,34 +204,37 @@ if show_wordclouds:
     # Select custom stopwords
     # add_stopwords_str = wc_col1.text_input("Enter list of words to exclude:",value='five,one,star')
     # stopwords_list = fn.get_stopwords_from_string(add_stopwords_str)
-
-    
+with st.container(border=True):
+    st.markdown(">👈 *Change Text Preprocessing Options on the sidebar.*")
     group_texts = fn_get_groups_freqs_wordclouds(df,ngrams=ngram_n, as_freqs=True,group_col='target-rating', text_col = text_col_selection,
-                                            stopwords=stopwords_list )
-    # preview_group_freqs(group_texts)
-    
+                                        stopwords=stopwords_list )
+# preview_group_freqs(group_texts)
+
     col1, col2 = st.columns(2)
     min_font_size = col1.number_input("Minumum Font Size",min_value=4, max_value=50,value=6, step=1)
     max_words = col2.number_input('Maximum # of Words', min_value=10, max_value=1000, value=200, step=5)
-    
-    fig  = fn.make_wordclouds_from_freqs(group_texts,stopwords=stopwords_list,min_font_size=min_font_size, max_words=max_words)
-    
-    st.pyplot(fig)
-else:
-    st.empty()
- 
+
+fig  = fn.make_wordclouds_from_freqs(group_texts,stopwords=stopwords_list,min_font_size=min_font_size, max_words=max_words)
+
+st.pyplot(fig)
+
 st.divider()
 
 
 ## Add creating ngrams
 st.subheader('N-Grams')
 
-# ngrams = st.radio('n-grams', [2,3,4],horizontal=True,index=1)
-top_n = st.select_slider('Compare Top # Ngrams',[10,15,20,25],value=15)
-## Compare n-grams
-ngrams_df = fn.show_ngrams(df,top_n, ngram_n,text_col_selection,stopwords_list=stopwords_list)
-fig = fn.plotly_group_ngrams_df(ngrams_df,show=False, title=f"Top {top_n} Most Common ngrams")
-st.plotly_chart(fig)
+with st.container(border=True):
+
+    st.markdown(">👈 Change Text Preprocessing Options on the sidebar.")
+
+    # ngrams = st.radio('n-grams', [2,3,4],horizontal=True,index=1)
+    # top_n = st.select_slider('Compare Top # Ngrams',[10,15,20,25],value=15)
+    top_n = st.slider("Compare Top # Ngrams", min_value=5, max_value=100, step=5,value=20)
+    ## Compare n-grams
+ngrams_df = fn.show_ngrams(df,top_n=top_n, ngrams=ngram_n,text_col_selection=text_col_selection,stopwords_list=stopwords_list)
+fig = fn.plotly_group_ngrams_df(ngrams_df,show=False, title=f"Top {top_n} Most Common ngrams",width=800)
+st.plotly_chart(fig,)
 
 # ## scattertext
 # @st.cache_data
@@ -260,3 +254,10 @@ st.plotly_chart(fig)
 #         components.html(html_to_show, width=1200, height=800, scrolling=True)
 # else:
 #     st.empty()
+
+
+st.sidebar.subheader("Author Information")
+with open("app-assets/author-info.html") as f:
+    author_info = f.read()
+with st.sidebar.container():
+    components.html(author_info)#"""

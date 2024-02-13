@@ -395,12 +395,12 @@ def show_ngrams(df, top_n, ngrams, text_col_selection, stopwords_list,
                                               as_freqs=False, as_tokens=True, group_col='target-rating', 
                                               text_col = text_col_selection,
                                          stopwords=stopwords_list) #testing stopwords
-    try:
-        return  compare_ngram_measures_df(group_texts[grp1_key], group_texts[grp2_key],
-                                             measure=measure, ngrams=ngrams,min_freq=min_freq,top_n=top_n,
-                                            group1_name=grp1_key, group2_name=grp2_key)
-    except Exception as e:
-        display(e)
+    # try:
+    return  compare_ngram_measures_df(group_texts[grp1_key], group_texts[grp2_key],
+                                            measure=measure, ngrams=ngrams,min_freq=min_freq,top_n=top_n,
+                                        group1_name=grp1_key, group2_name=grp2_key)
+    # except Exception as e:
+    #     display(e)
         
 
 def plotly_group_ngrams_df(
@@ -409,7 +409,7 @@ def plotly_group_ngrams_df(
     mi_colname_2="High",
     color_1 = "red",
     color_2 = "green",
-    height=600,
+    height=None,#1000,
     width=1000,
     title="Top n-grams per Group",
     show=False,
