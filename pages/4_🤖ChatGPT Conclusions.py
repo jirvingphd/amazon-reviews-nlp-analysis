@@ -145,7 +145,7 @@ def get_prompt_answer(summaries,selected_task,query):
 st.header("Conclusions with ChatGPT")
 
 
-st.image('images/OpenAI_Logo.svg')
+# st.image('images/OpenAI_Logo.svg')
 
 def response_gen(response):
     for word in response.split(" "):
