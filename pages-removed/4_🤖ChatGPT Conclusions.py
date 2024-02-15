@@ -110,7 +110,7 @@ if 'messages' not in st.session_state:
 if 'chat' not in st.session_state:
     st.session_state.chat = chat = ChatOpenAI(temperature=0)
 if 'api_key' not in st.session_state:
-    st.session_state.api_key = os.environ['OPENAI_API_KEY']
+    st.session_state.api_key = os.getenv('OPENAI_API_KEY')
 
 
 def get_prompt_answer(summaries,selected_task,query):

@@ -113,7 +113,7 @@ if 'messages' not in st.session_state:
     st.session_state.messages=[]
     
 if 'API_KEY' not in st.session_state:
-    st.session_state['API_KEY'] = os.environ['OPENAI_API_KEY'] # Could have user paste in via sidebar
+    st.session_state['API_KEY'] = os.getenv('OPENAI_API_KEY') # Could have user paste in via sidebar
 
 if 'conversation' not in st.session_state:
     st.session_state['conversation'] = None
