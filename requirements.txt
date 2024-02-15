@@ -1,3 +1,6 @@
+streamlit==1.31.1
+chromadb==0.4.22
+"sqlite3>=3.35.0"
 joblib==1.1.1
 langchain==0.1.7
 langchain_community==0.0.20
@@ -8,7 +11,6 @@ pandas==1.5.3
 Pillow==9.5.0
 # Pillow==10.2.0
 plotly==5.15.0
-streamlit==1.31.1
 tensorflow==2.12.0
 wordcloud==1.9.3
 matplotlib==3.7.1
@@ -16,5 +18,3 @@ nltk==3.8.1
 numpy==1.23.4
 pandas==1.5.3
 statsmodels==0.14.0 
-chromadb==0.4.22
-"sqlite3>=3.35.0"
