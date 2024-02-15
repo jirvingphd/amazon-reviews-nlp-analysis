@@ -231,11 +231,12 @@ from langchain.agents import AgentExecutor, create_openai_tools_agent
 ## Connect to vector database
 fpath_db = FPATHS['data']['app']['vector-db_dir']
 
+db = Chroma(persist_directory=fpath_db, 
+           embedding_function=OpenAIEmbeddings())
+    
+
 def get_agent(fpath_db, k=6, temperature=0.1,topic =  "answering questions about the product",
              return_messages=True):
-    
-    db = Chroma(persist_directory=fpath_db, 
-           embedding_function=OpenAIEmbeddings())
     
     ## Make retreieval tool
     tool = create_retriever_tool(
