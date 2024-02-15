@@ -88,30 +88,6 @@ Additionally,  the proportion of One-Star reviews has increased while 5-Star rev
 
 We will use the text from the customer reviews to provide insights into customer preferences and provide recommendations on how to improve their product.
 
-#### Reference
-
-**Justifying recommendations using distantly-labeled reviews and fined-grained aspects**
-Jianmo Ni, Jiacheng Li, Julian McAuley
-*Empirical Methods in Natural Language Processing (EMNLP)*, 2019
-
-
-## Methods `[TO DO]`
-- For analysis and machine learning, we used a subset of the reviews.
-
-
- 
-- EDA for Insights:
-    - Used spacy for preprocessing text for EDA
-    - Generated bar graphs of top bigrams, trigrams, and quadrams for
-- key relevant findings from exploritory data analysis for mod 1, will be more involved in future mod
-
-### Streamlit App Methods
-- Leveraged Hugging Face pre-trained BART transformers to summarize the 1,000+ reviews for each of the two groups.
-- Summaries from the transformer were then used as the context for ChatGPT for providing a final summary and recommendations.
-
-
-## Results
-
 #### WordClouds (Bigrams)
 <img src='images/05_wordclouds.png' width=90%>
 
@@ -122,6 +98,39 @@ Jianmo Ni, Jiacheng Li, Julian McAuley
 <img src="images/04_ngrams_by_group.png" width=90%>
 
 > We can see that now that there are complaints about the noodles feeling like chewing on rubber bands. There's also clearly a smell that may or may not go away (as it appears in both groups). Further exploration of the texts via Scattertext (see app at top of README) uncovers alternative opinions on how easy it is to address the smell.
+
+#### Reference
+
+**Justifying recommendations using distantly-labeled reviews and fined-grained aspects**
+Jianmo Ni, Jiacheng Li, Julian McAuley
+*Empirical Methods in Natural Language Processing (EMNLP)*, 2019
+
+
+## Methods `[Work in Progress]`
+- For analysis and machine learning, we used a subset of the reviews.
+ 
+- EDA for Insights:
+    - Used spacy for preprocessing text for EDA
+    - Produced word clouds for EDA
+    - Explored the top bigrams, trigrams, and quadrams for each group to find key differnces.
+    - Explored a scattertext explorer to interactively explore the word usage between groups.  (Scatter text explorer is available on the Scattertext page of the companion streamlit app.)
+
+- Machine Learning Classification:
+    - Tried multiple machine learning classification models (LogisitcRegression, Naive Bayes, SVC, RandomForest, etc. )
+    - The best performing model was a Logistic Regression with Tf-idf count vectorization. (See the results section below)
+
+
+
+
+### Streamlit App Methods
+
+- Leveraged Hugging Face pre-trained BART transformers to summarize the 1,000+ reviews for each of the two groups.
+- Summaries from the transformer were then used as the context for ChatGPT prompt for providing a final summary and recommendations.
+- Deployed best machine learning model for live predictions of new review text. 
+    - Included a LimeTextExplainer to highlight which 
+
+
+## Results
 
 ### Machine Learning Text Classification
 
@@ -176,6 +185,12 @@ Jianmo Ni, Jiacheng Li, Julian McAuley
     
 ![png](images/readme/output_23_1.png)
     
+As we can see the LogisticRegression model performed very well, with achieving >94% recall for both high and low-scoring reviews. 
+
+The model was serialized and deployed as part of the companion streamlit application.
+
+
+
 
 ### Artifical Neural Network Text Classification
 
