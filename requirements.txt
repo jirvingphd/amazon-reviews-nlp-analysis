@@ -16,3 +16,4 @@ nltk==3.8.1
 numpy==1.23.4
 pandas==1.5.3
 statsmodels==0.14.0 
+chromadb==0.4.22
