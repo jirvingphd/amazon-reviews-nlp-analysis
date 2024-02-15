@@ -33,7 +33,7 @@ from langchain_openai import ChatOpenAI
 
 from langchain.cache import InMemoryCache
 from langchain.globals import set_llm_cache
-set_llm_cache(InMemoryCache())
+# set_llm_cache(InMemoryCache())
 
 
 
@@ -235,7 +235,7 @@ db = Chroma(persist_directory=fpath_db,
            embedding_function=OpenAIEmbeddings())
     
 
-def get_agent(fpath_db, k=6, temperature=0.1,topic =  "answering questions about the product",
+def get_agent(fpath_db, k=8, temperature=0.0,topic =  "answering questions about the product",
              return_messages=True):
     
     ## Make retreieval tool
