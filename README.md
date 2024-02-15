@@ -21,7 +21,7 @@ ___
 
 #### Companion Streamlit Dashboard 
 
-- [https://amazon-reviews-nlp-analysis-predictions.streamlit.app/](https://amazon-reviews-nlp-analysis-predictions.streamlit.app/)
+- [https://amazon-reviews-nlp-analysis.streamlit.app/](https://amazon-reviews-nlp-analysis.streamlit.app/)
 
 
 <img src="images/streamlit-app-preview.png" width=1000>
