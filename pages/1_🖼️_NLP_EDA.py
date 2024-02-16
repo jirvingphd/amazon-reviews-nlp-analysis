@@ -11,7 +11,7 @@ import plotly.express as px
 import plotly.io as pio
 pio.templates.default='streamlit'
 # Changing the Layout
-st.set_page_config( #layout="wide", 
+st.set_page_config( layout="wide", 
                    page_icon="⭐️Amazon Reviews NLP EDA")
 
 
@@ -214,7 +214,8 @@ with st.container(border=True):
     min_font_size = col1.number_input("Minumum Font Size",min_value=4, max_value=50,value=6, step=1)
     max_words = col2.number_input('Maximum # of Words', min_value=10, max_value=1000, value=200, step=5)
 
-fig  = fn.make_wordclouds_from_freqs(group_texts,stopwords=stopwords_list,min_font_size=min_font_size, max_words=max_words)
+fig  = fn.make_wordclouds_from_freqs(group_texts,stopwords=stopwords_list,min_font_size=min_font_size, max_words=max_words,
+                                     figsize=(16,10))
 
 st.pyplot(fig)
 
@@ -231,11 +232,17 @@ with st.container(border=True):
     # ngrams = st.radio('n-grams', [2,3,4],horizontal=True,index=1)
     # top_n = st.select_slider('Compare Top # Ngrams',[10,15,20,25],value=15)
     top_n = st.slider("Compare Top # Ngrams", min_value=5, max_value=100, step=5,value=20)
+    use_plotly = st.checkbox("Interactive graph", value=False)
     ## Compare n-grams
 ngrams_df = fn.show_ngrams(df,top_n=top_n, ngrams=ngram_n,text_col_selection=text_col_selection,stopwords_list=stopwords_list)
-fig = fn.plotly_group_ngrams_df(ngrams_df,show=False, title=f"Top {top_n} Most Common ngrams",width=800)
-st.plotly_chart(fig,)
 
+
+if use_plotly:
+    fig = fn.plotly_group_ngrams_df(ngrams_df,show=False, title=f"Top {top_n} Most Common ngrams",width=800)
+    st.plotly_chart(fig,)
+else:
+    fig = fn.plot_group_ngrams(ngrams_df,   group1_colname='Low', group2_colname="High", top_n=top_n)#,figsize=(8,12))
+    st.pyplot(fig,use_container_width=True)
 # ## scattertext
 # @st.cache_data
 # def load_scattertext(fpath):

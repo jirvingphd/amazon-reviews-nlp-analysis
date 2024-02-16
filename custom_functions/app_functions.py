@@ -2,7 +2,8 @@
 
 ## Adding caching to reduce api usage
 from langchain.cache import InMemoryCache
-from langchain.document_loaders import CSVLoader
+# from langchain.document_loaders import CSVLoader
+from langchain_community.document_loaders import CSVLoader
 from langchain.globals import set_llm_cache
 from langchain.memory import ChatMessageHistory, ConversationBufferMemory
 from langchain.prompts import (
@@ -54,6 +55,7 @@ def load_product_info(fpath):
         product_string+=f"\n{k} = {v}\n"
         
     return product_string
+
 
 def load_vector_database(fpath_db, fpath_csv=None, metadata_columns = ['reviewerID'],
                          chunk_size=500, use_previous = True,
