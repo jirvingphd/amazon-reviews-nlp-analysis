@@ -33,6 +33,7 @@ from langchain_openai import ChatOpenAI
 
 from langchain.cache import InMemoryCache
 from langchain.globals import set_llm_cache
+import custom_functions as fn
 # set_llm_cache(InMemoryCache())
 
 
@@ -231,13 +232,47 @@ from langchain.agents import AgentExecutor, create_openai_tools_agent
 ## Connect to vector database
 fpath_db = FPATHS['data']['app']['vector-db_dir']
 
-db = Chroma(persist_directory=fpath_db, 
-           embedding_function=OpenAIEmbeddings())
+# db = Chroma(persist_directory=fpath_db, 
+#            embedding_function=OpenAIEmbeddings())
     
 
-def get_agent(fpath_db, k=8, temperature=0.0,topic =  "answering questions about the product",
-             return_messages=True):
+# def get_agent(fpath_db, k=8, temperature=0.1,topic =  "answering questions about the product",
+#              return_messages=True):
     
+#     ## Make retreieval tool
+#     tool = create_retriever_tool(
+#          db.as_retriever(k=k),
+#         "search_reviews",
+#         "Searches and returns excerpts from Amazon user reviews.",
+#     )
+#     tools = [tool]
+#     # Pull starter prompt from langchainhub
+#     prompt = hub.pull("hwchase17/openai-tools-agent")
+#     # Update starter prompt 
+#     template = f"You are a helpful assistant for {topic} based on the Amazon product review documents. Include quotes from the documents, when appropriate."
+#     # template+=f"Here is some additional metadata about the product for your reference: ```{product.to_string()}```"
+#     # template = "You are a helpful assistant for answering questions about the product from the product reviews documents."
+#     prompt.messages[0] = SystemMessagePromptTemplate.from_template(template)
+#     prompt = ChatPromptTemplate.from_messages(prompt.messages)
+#     # prompt.messages[0] = prompt.messages[0].format_messages(topic=topic)
+
+#     llm = ChatOpenAI(temperature=0)
+#     agent = create_openai_tools_agent(llm, tools, prompt)
+#     agent_executor = AgentExecutor(agent=agent, tools=tools, 
+#                                memory=ConversationBufferMemory(return_messages=return_messages))
+#     return agent_executor
+
+fpath_llm_csv = FPATHS['data']['app']['reviews-with-target-for-llm_csv']
+fpath_db = FPATHS['data']['app']['vector-db_dir']
+db = fn.load_vector_database( fpath_db,fpath_llm_csv, use_previous=True)#, use_previous=False)
+
+def get_agent(fpath_db, k=8, temperature=0.2,
+             return_messages=True, verbose=False):
+    
+    
+    # import custom_functions as fn
+    from custom_functions.app_functions import load_product_info
+    product_string = load_product_info(FPATHS['data']['app']['product-metadata-llm_json'])
     ## Make retreieval tool
     tool = create_retriever_tool(
          db.as_retriever(k=k),
@@ -245,20 +280,35 @@ def get_agent(fpath_db, k=8, temperature=0.0,topic =  "answering questions about
         "Searches and returns excerpts from Amazon user reviews.",
     )
     tools = [tool]
+
     # Pull starter prompt from langchainhub
     prompt = hub.pull("hwchase17/openai-tools-agent")
-    # Update starter prompt 
-    template = f"You are a helpful assistant for {topic} based on the Amazon product review documents."
-    # template = "You are a helpful assistant for answering questions about the product from the product reviews documents."
-    prompt.messages[0] = SystemMessagePromptTemplate.from_template(template)
-    # prompt.messages[0] = prompt.messages[0].format_messages(topic=topic)
 
-    llm = ChatOpenAI(temperature=0)
+    # produt_string = 
+    # # Replace system prompt
+    template = f"You are a helpful data analyst for answering questions about what customers said about a specific  Amazon product using only content from use reviews."
+    product_template = f" Assume all user questions are asking about the content in the user reviews. Note the product metadata is:\n```{product_string}```\n\n"
+    template+=product_template
+    
+    # template+="\n\nUse information from the following review documents to answer questions:"
+    # qa_prompt_template= "\n- Here are the review documents:\n----------------\n{agent_scratchpad}\n\n"
+    qa_prompt_template ="""Use the following pieces of context (user reviews) to answer the user's question by summarizing the reviews. 
+            If you don't know the answer, just say that you don't know, don't try to make up an answer.\n----------------\n{agent_scratchpad}\n\n"""
+    template+=qa_prompt_template
+    # template+="Try to infer one based on the review documents, otherwise just say that you don't know, don't try to make up an answer"
+
+    # Replace system prompt
+    prompt.messages[0] = SystemMessagePromptTemplate.from_template(template)
+    prompt = ChatPromptTemplate.from_messages(prompt.messages)
+
+    if verbose:
+        print(prompt.messages)
+        
+    llm = ChatOpenAI(temperature=temperature)
     agent = create_openai_tools_agent(llm, tools, prompt)
     agent_executor = AgentExecutor(agent=agent, tools=tools, 
-                               memory=ConversationBufferMemory(return_messages=return_messages))
+                                   memory=ConversationBufferMemory(return_messages=return_messages))
     return agent_executor
-
 
 
 
@@ -295,13 +345,13 @@ def response_gen(response):
 
 st.header("Q&A with ChatGPT")
 # Create chatbot with selected temp
-col1, col2 = st.columns([.1,.8])
+col1, col2 = st.columns([.15,.8])
 
 # submit_button = st.button(label="Send")
 response_container = st.container(border=True,height=400)
 
 
-
+col1.write('')
 user_avatar = col1.selectbox("Select an avatar:", options=['📞','🧔🏻‍♂️','👩‍🦰',"🥷","⌨️"], index=1)
 
 temp=0

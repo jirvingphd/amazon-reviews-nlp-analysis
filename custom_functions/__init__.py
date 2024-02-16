@@ -1,3 +1,5 @@
+from .app_functions import *
+
 # from IPython.display import display
 def mute_color(color_name, saturation_adjustment=0.5, lightness_adjustment=1.2):
     """
