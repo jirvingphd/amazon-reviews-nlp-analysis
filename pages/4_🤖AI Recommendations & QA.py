@@ -264,9 +264,9 @@ fpath_db = FPATHS['data']['app']['vector-db_dir']
 
 fpath_llm_csv = FPATHS['data']['app']['reviews-with-target-for-llm_csv']
 fpath_db = FPATHS['data']['app']['vector-db_dir']
-db = fn.load_vector_database( fpath_db,fpath_llm_csv, use_previous=True)#, use_previous=False)
+db = fn.load_vector_database( fpath_db,fpath_llm_csv, delete=True)#, use_previous=False)
 
-def get_agent(fpath_db, k=8, temperature=0.2,
+def get_agent(fpath_db, k=8, temperature=0.1,
              return_messages=True, verbose=False):
     
     
