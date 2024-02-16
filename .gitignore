@@ -133,3 +133,5 @@ data/raw/meta_Grocery_and_Gourmet_Food.json.gz
 data/glove/glove.6B.100d.txt
 data/raw/*
 data/raw-split/*
+app-assets/reviews_db/chroma-collections.parquet
+app-assets/reviews_db/chroma-embeddings.parquet
