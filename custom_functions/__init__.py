@@ -1,5 +1,17 @@
 from .app_functions import *
 
+
+def load_filepaths_json(fname="config/filepaths.json"):
+    ##Load in the data
+    import json
+    with open(fname) as f:
+        FPATHS = json.load(f)
+    print("Top-Level Keys in FPATHS dict:")
+    # [print(f'- {k}') for k in FPATHS.keys()]
+    print(FPATHS.keys())
+    return FPATHS
+
+
 # from IPython.display import display
 def mute_color(color_name, saturation_adjustment=0.5, lightness_adjustment=1.2):
     """
