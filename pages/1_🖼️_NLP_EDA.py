@@ -34,8 +34,8 @@ from langchain.agents.openai_functions_agent.agent_token_buffer_memory import Ag
 from langchain.memory import ConversationBufferMemory
 
 # Changing the Layout
-st.set_page_config( layout="wide", 
-                   page_icon="⭐️Amazon Reviews NLP EDA")
+st.set_page_config( #layout="wide", 
+                   page_icon="🖼️Amazon Reviews NLP EDA")
 
 
 
