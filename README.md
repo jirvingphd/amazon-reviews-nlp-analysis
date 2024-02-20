@@ -1,6 +1,6 @@
-# Understanding Consumer Taste Preferences from Reviews
 
-## Natural Language Processing Analysis of Amazon Reviews & AI Recommendations
+# NLP Analysis of Amazon Reviews + AI Recommendations
+## Understanding Consumer Taste Preferences from Reviews
 
 - James M. Irving, Ph.D.
 
