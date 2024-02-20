@@ -108,7 +108,7 @@ st.divider()
 
 @st.cache_resource
 def load_vector_database(fpath_db, fpath_csv=None, metadata_columns = ['reviewerID'],
-                         chunk_size=500, use_previous = True,
+                         chunk_size=500, use_previous = False,
                         #  delete=False, 
                          as_retriever=False, k=8, **retriever_kwargs):
     
