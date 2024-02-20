@@ -1,6 +1,6 @@
 # Understanding Consumer Taste Preferences from Reviews
 
-## Natural Language Processing Analysis of Amazon Reviews for Gourmet and Grocery Foods
+## Natural Language Processing Analysis of Amazon Reviews & AI Recommendations
 
 - James M. Irving, Ph.D.
 
