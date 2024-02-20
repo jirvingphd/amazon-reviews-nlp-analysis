@@ -12,7 +12,7 @@ import plotly.io as pio
 pio.templates.default='streamlit'
 # Changing the Layout
 st.set_page_config( #layout="wide", 
-                   page_icon="⭐️Amazon Reviews NLP Dash")
+                   page_icon="🏡Amazon Reviews NLP Dash")
 
 
 

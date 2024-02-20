@@ -19,6 +19,9 @@ from langchain.memory import ConversationBufferMemory
 
 #https://github.com/langchain-ai/streamlit-agent/blob/main/streamlit_agent/chat_with_documents.py
 from langchain.memory.chat_message_histories.streamlit import StreamlitChatMessageHistory
+# Changing the Layout
+st.set_page_config( #layout="wide", 
+                   page_icon="🤖AI Recommendations")
 
 import openai, os
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -174,9 +177,9 @@ st.header("AI Recommendations")
 summary_container = st.container()
 
 st.divider()
-st.header("Q&A")
 
 chat_container = st.container()
+chat_container.header("Q&A")
 
 def get_template_string_reviews():
      # Create template with product info
