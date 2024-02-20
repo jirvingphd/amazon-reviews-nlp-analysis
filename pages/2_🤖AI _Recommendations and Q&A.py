@@ -275,7 +275,8 @@ def print_history(agent_executor):
 
 
 def get_task_options(options_only=False):
-    task_prompt_dict= {"Summary of Customer Sentiment":'Provide a summary list of what 1-star reviews did not like and a summary of what did 5-star reviews liked.',
+    task_prompt_dict= {
+        # "Summary of Customer Sentiment":'Provide a summary list of what 1-star reviews did not like and a summary of what did 5-star reviews liked.',
                    'Product Recommendations':'Provide a list of 3-5 actionable business recommendations on how to improve the product.',
                    'Marketing Recommendations':'provide a list of 3-5 recommendations for the marketing team to on how to better set customer expectations before purchasing the product or to better target the customers who will enjoy it.'}
     if options_only:
