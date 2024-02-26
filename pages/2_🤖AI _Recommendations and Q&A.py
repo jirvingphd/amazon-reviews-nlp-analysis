@@ -168,8 +168,9 @@ if os.path.exists(fpath_db):
 else:
     retriever = load_vector_database(fpath_db, fpath_llm_csv, use_previous=False, as_retriever=True)
 
-if 'retriever' not in st.session_state:
-    st.session_state['retriever'] = retriever
+
+# if 'retriever' not in st.session_state:
+#     st.session_state['retriever'] = retriever
 
 # Create chat container early
 # st
@@ -237,7 +238,7 @@ def get_agent(retriever=None,fpath_db=FPATHS['data']['app']['vector-db_dir'], k=
             
             
 def reset_agent(#fpath_db = FPATHS['data']['app']['vector-db_dir'],
-                retriever=st.session_state['retriever'] , 
+                retriever=retriever, #st.session_state['retriever'] , 
                 starter_message = "Hello, there! Enter your question here and I will check the full reviews database to provide you the best answer.",
                get_agent_kws={}):
     # fpath_db
@@ -305,11 +306,11 @@ def get_template_string_interpret(context_low, context_high, context_type='BERT-
 
 if 'agent' not in st.session_state:
     # agent = get_agent(retriever)
-    st.session_state['agent'] =reset_agent(retriever=st.session_state['retriever'] )
+    st.session_state['agent'] =reset_agent(retriever=retriever)#st.session_state['retriever'] )
 
 
 if 'agent-summarize' not in st.session_state:
-    st.session_state['agent-summarize'] = get_agent(retriever=st.session_state['retriever'] ,
+    st.session_state['agent-summarize'] = get_agent(retriever=retriever,#st.session_state['retriever'] ,
         template_string_func=lambda: get_template_string_interpret(context_low=summaries['summary-low'],
                                                                    context_high=summaries['summary-high'])
     )
@@ -365,4 +366,4 @@ reset_chat = st.sidebar.button("Reset Chat?")
 if reset_chat:
     with output_container:
 
-        st.session_state['agent'] =reset_agent(st.session_state['retriever'] )
+        st.session_state['agent'] =reset_agent(retriever=retriever)#st.session_state['retriever'] )
