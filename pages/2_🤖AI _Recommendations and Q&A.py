@@ -369,3 +369,4 @@ if reset_chat:
     with output_container:
 
         st.session_state['agent'] =reset_agent(retriever=retriever)#st.session_state['retriever'] )
+        print_history(st.session_state['agent'])
