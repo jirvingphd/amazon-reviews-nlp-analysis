@@ -282,7 +282,7 @@ def get_task_options(options_only=False):
     task_prompt_dict= {
         # "Summary of Customer Sentiment":'Provide a summary list of what 1-star reviews did not like and a summary of what did 5-star reviews liked.',
                    'Product Recommendations':'Provide a list of 3-5 actionable business recommendations on how to improve the product.',
-                   'Marketing Recommendations':'provide a list of 3-5 recommendations for the marketing team to on how to better set customer expectations before purchasing the product or to better target the customers who will enjoy it.'}
+                   'Marketing Recommendations':'Provide a list of 3-5 recommendations for the marketing team to on how to better set customer expectations before purchasing the product or to better target the customers who will enjoy it.'}
     if options_only:
         return list(task_prompt_dict.keys())
     else:
@@ -337,12 +337,13 @@ with summary_container:
         show_recs = col2.button("Get response.")
     if show_recs:
         prompt_text =  task_options[selected_task]
+        st.chat_message("user", avatar=user_avatar).write(prompt_text)
+        
         response = st.session_state['agent-summarize'].invoke({'input':prompt_text})
 
         
         # print_history(st.session_state['agent-summarize'])
-        st.chat_message("user", avatar=user_avatar).write(prompt_text)
-        
+
         # response = st.session_state['agent'].invoke({"input":prompt_text})
         st.chat_message('assistant', avatar=ai_avatar).write(fake_streaming(response['output']))
 
@@ -352,14 +353,15 @@ with chat_container:
     output_container = st.container(border=True)
     user_text = st.chat_input(placeholder="Enter your question here.")
 
-    if user_text:
-        with output_container:
+
+    with output_container:
             
             print_history(st.session_state['agent'])
-            st.chat_message("user", avatar=user_avatar).write(user_text)
+            if user_text:
+                st.chat_message("user", avatar=user_avatar).write(user_text)
             
-            response = st.session_state['agent'].invoke({"input":user_text})
-            st.chat_message('assistant', avatar=ai_avatar).write(fake_streaming(response['output']))
+                response = st.session_state['agent'].invoke({"input":user_text})
+                st.chat_message('assistant', avatar=ai_avatar).write(fake_streaming(response['output']))
 
 
 reset_chat = st.sidebar.button("Reset Chat?")
