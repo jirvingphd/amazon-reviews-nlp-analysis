@@ -315,9 +315,9 @@ else:
     fig = fn.plot_group_ngrams(ngrams_df,   group1_colname='Low', group2_colname="High", top_n=top_n)#,figsize=(8,12))
     st.pyplot(fig,use_container_width=True)
     
-## add chat gpt
-chat_container = st.container()
-button_ai = st.button("Interpret with ChatGPT")
+# ## add chat gpt
+# chat_container = st.container()
+# button_ai = st.button("Interpret with ChatGPT")
 
 
         
