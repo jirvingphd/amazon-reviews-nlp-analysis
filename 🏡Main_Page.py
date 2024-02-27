@@ -210,7 +210,7 @@ st.markdown("""**Ups and downs: Modeling the visual evolution of fashion trends 
 
 """)
 with st.container(border=True):
-    if st.checkbox("Show Full Amazon Dataset Information", value=True):
+    if st.checkbox("Show Full Amazon Dataset Information", value=False):
         with open('data/Amazon Product Reviews.md') as f:
             st.markdown(f.read())
 
