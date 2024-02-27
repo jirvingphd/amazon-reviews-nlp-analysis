@@ -198,7 +198,7 @@ st.divider()
 st.markdown("We will use Natural Language Processing and Machine Learning to provide insights into what customers do or do not like about Miracle Noodles")
 st.divider()
 ## Product metasata
-st.markdown("##### ***👈 Select the app page via the sidebar.***")
+st.markdown("##### ***👈 Select the app page via the sidebar. (Click on the `>` to show sidebar.)***")
 st.divider()
 # st.plotly_chart(px.histogram(df, 'overall', color='overall',title='# of Reviews per Star Rating',animation_frame='year'))
 
