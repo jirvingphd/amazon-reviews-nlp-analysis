@@ -209,10 +209,10 @@ st.markdown("""**Ups and downs: Modeling the visual evolution of fashion trends 
 **Image-based recommendations on styles and substitutes** J. McAuley, C. Targett, J. Shi, A. van den Hengel *SIGIR*, 2015 [pdf](https://cseweb.ucsd.edu/~jmcauley/pdfs/sigir15.pdf)
 
 """)
-
-if st.checkbox("Show Full Amazon Dataset Information", value=True):
-    with open('data/Amazon Product Reviews.md') as f:
-        st.markdown(f.read())
+with st.container(border=True):
+    if st.checkbox("Show Full Amazon Dataset Information", value=True):
+        with open('data/Amazon Product Reviews.md') as f:
+            st.markdown(f.read())
 
 # ## word clouds
 # st.header("NLP EDA")
