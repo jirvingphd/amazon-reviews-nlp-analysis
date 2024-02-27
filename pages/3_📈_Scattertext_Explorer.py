@@ -87,3 +87,12 @@ with st.spinner("Loading explorer..."):
         components.html(html_to_show, width=1200, height=800, scrolling=True)
     # st.divider()
 st.markdown('### ☝️ Scroll up to return to scatterplot')
+
+
+st.sidebar.subheader("Author Information")
+    
+with open("app-assets/author-info.md") as f:
+    author_info = f.read()
+    
+with st.sidebar.container():
+    st.markdown(author_info, unsafe_allow_html=True)

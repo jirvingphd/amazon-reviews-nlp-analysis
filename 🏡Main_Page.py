@@ -84,12 +84,12 @@ show_yearly =True#st.sidebar.checkbox('Show yearly trends in reviews', value=Tru
 st.markdown("> This project utilizes the Amazon Reviews Dataset for a deep dive into customer sentiment surround a specific product.")
     
 st.sidebar.subheader("Author Information")
-with open("app-assets/author-info.html") as f:
-    author_info = f.read()
-with st.sidebar.container():
-    components.html(author_info)#"""
     
-
+with open("app-assets/author-info.md") as f:
+    author_info = f.read()
+    
+with st.sidebar.container():
+    st.markdown(author_info, unsafe_allow_html=True)
 st.subheader("Product Information")
 
 if show_product==True:

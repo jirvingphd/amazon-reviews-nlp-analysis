@@ -23,11 +23,12 @@ with open("config/filepaths.json") as f:
 fpath_best_ml = FPATHS['results']['best-ml-clf_joblib']
     
 st.sidebar.subheader("Author Information")
-with open("app-assets/author-info.html") as f:
-    author_info = f.read()
-with st.sidebar.container():
-    components.html(author_info)#"""
     
+with open("app-assets/author-info.md") as f:
+    author_info = f.read()
+    
+with st.sidebar.container():
+    st.markdown(author_info, unsafe_allow_html=True)
     
 
 @st.cache_resource

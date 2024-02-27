@@ -408,7 +408,15 @@ def fake_streaming(response):
 
 
 st.sidebar.subheader("Author Information")
-with open("app-assets/author-info.html") as f:
+# with open("app-assets/author-info.html") as f:
+#     author_info = f.read()
+    
+# with st.sidebar.container():
+#     components.html(author_info)#"""
+    
+    
+with open("app-assets/author-info.md") as f:
     author_info = f.read()
+    
 with st.sidebar.container():
-    components.html(author_info)#"""
+    st.markdown(author_info, unsafe_allow_html=True)#"""

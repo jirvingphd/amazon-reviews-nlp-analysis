@@ -369,3 +369,11 @@ if reset_chat:
     with output_container:
         st.session_state['agent'] =reset_agent(retriever=retriever)#st.session_state['retriever'] )
         # print_history(st.session_state['agent'])
+        
+st.sidebar.subheader("Author Information")
+    
+with open("app-assets/author-info.md") as f:
+    author_info = f.read()
+    
+with st.sidebar.container():
+    st.markdown(author_info, unsafe_allow_html=True)
