@@ -224,6 +224,7 @@ st.divider()
 
 chat_container = st.container()
 chat_container.header("Q&A")
+output_container = chat_container.container(border=True)
 
 def get_template_string_reviews():
      # Create template with product info
@@ -349,7 +350,8 @@ def get_template_string_interpret(context_low, context_high, context_type='BERT-
 
 if 'agent' not in st.session_state:
     # agent = get_agent(retriever)
-    st.session_state['agent'] =reset_agent(retriever=retriever)#st.session_state['retriever'] )
+    with output_container:
+        st.session_state['agent'] =reset_agent(retriever=retriever)#st.session_state['retriever'] )
 
 
 if 'agent-summarize' not in st.session_state:
@@ -393,18 +395,18 @@ with summary_container:
 
 
 with chat_container:
-    output_container = st.container(border=True)
+    # output_container = st.container(border=True)
     user_text = st.chat_input(placeholder="Enter your question here.")
 
 
     with output_container:
             
-            print_history(st.session_state['agent'])
-            if user_text:
-                st.chat_message("user", avatar=user_avatar).write(user_text)
-            
-                response = st.session_state['agent'].invoke({"input":user_text})
-                st.chat_message('assistant', avatar=ai_avatar).write(fake_streaming(response['output']))
+        print_history(st.session_state['agent'])
+        if user_text:
+            st.chat_message("user", avatar=user_avatar).write(user_text)
+        
+            response = st.session_state['agent'].invoke({"input":user_text})
+            st.chat_message('assistant', avatar=ai_avatar).write(fake_streaming(response['output']))
 
 
 reset_chat = st.sidebar.button("Reset Chat?")
