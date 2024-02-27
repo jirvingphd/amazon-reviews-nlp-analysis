@@ -149,9 +149,11 @@ if show_review_graphs==True:
     # if show_histogram:
 
         ## Plot histogram
-    st.plotly_chart(px.histogram(df, 'overall', color='overall',width=600,
+    fig = px.histogram(df, 'overall', color='overall',width=600,
                                 # title='# of Reviews per Star Rating',
-                                color_discrete_map=muted_colors))
+                                color_discrete_map=muted_colors)
+    fig.update_layout(dragmode=False)
+    st.plotly_chart(fig, use_container_width=True)
     st.markdown("> **Miracle Noodles have a large number of both 1 star and 5-star reviews.**")
 else:
     st.empty()
@@ -163,9 +165,11 @@ if show_yearly==True:
 
     ## Plot average scatter with trendline by year
     avg_by_year = fn.get_average_rating_by_year(df)
-    st.plotly_chart(px.scatter(avg_by_year, trendline='ols', width=800, height=400,
+    fig = px.scatter(avg_by_year, trendline='ols', width=800, height=400,
                             # title='Average Rating over Time'
-                            ))
+                            )
+    fig.update_layout(dragmode=False)
+    st.plotly_chart(fig)
 
     st.markdown("> **However, overall the average customer rating has decreased over time.**")
 
@@ -179,9 +183,11 @@ if show_yearly==True:
     melted_counts_by_year = fn.get_rating_percent_by_year(df, melted=True)
     melted_counts_by_year = melted_counts_by_year[melted_counts_by_year['Stars'].isin(stars_to_plot)]
 
-    st.plotly_chart(px.scatter(melted_counts_by_year, x='year', y='%', color='Stars',
+    fig = px.scatter(melted_counts_by_year, x='year', y='%', color='Stars',
                             color_discrete_map=muted_colors,# title='Trend in Proportion of Star Ratings over Time',
-                            trendline='ols'))
+                            trendline='ols')
+    fig.update_layout(dragmode=False)
+    st.plotly_chart(fig, use_container_width=True)
     st.markdown("> **The proportion of 1-star reviews has increased over time while the proportion of 5-star reviews decreased.**")
 
 else:

@@ -50,6 +50,10 @@ def load_summaries(fpath):
     return summaries
 
 summaries = load_summaries(FPATHS['results']['review-summary-01_json'])
+# df = load_df(FPATHS['data']['processed-nlp']['processed-reviews-with-target_joblib'])
+meta_df = load_metadata(FPATHS['data']['app']['product-metadata_json'])
+product= meta_df.iloc[0]
+
 
 
 ai_avatar  = "🤖"
@@ -58,6 +62,57 @@ user_avatar = "💬"
 
 st.header("Summaries & Recommendations")
 st.markdown('We leveraged pre-trained summarization models from HuggingFace transformers to summarize all low and all high reviews. These summaries will be the contextual information that ChatGPT will use to provide the final conclusions.')
+
+st.divider()
+def load_product_info(fpath):
+    import json
+    with open(fpath,'r') as f:
+        product_json = json.load(f)
+        
+    product_string = "Product Info:\n"
+    for k,v in product_json.items():
+        if k.lower()=='description':
+            continue
+        product_string+=f"\n{k} = {v}\n"
+        
+    return product_string
+
+
+show_product= st.checkbox("Show Product Information", value=True)
+
+if show_product==True:
+    st.subheader("Product Information")
+
+
+    # st.markdown(f'Product Title: ***{product["Title (Raw)"]}***')
+    # st.divider()
+    col1,col2 = st.columns(2)
+
+    # @st.cache_data
+    def display_metadata(meta_df,iloc=0):
+        # product = meta_df.iloc[iloc]
+        # md = "#### Product Being Reviewed"
+        md = ""
+        md += f'\n- Product Title:\n***\"{product["Title (Raw)"]}\"***'
+        # md += f"<p><img src='{product['Product Image']}' width=300px></p>"
+        md += f'\n- Brand: {product["Brand"]}'
+        md += f"\n- Price: {product['Price']}"
+        md += f"\n- Ranked {product['Rank']} (2018)"
+
+        md += f"\n- Categories:\n    - "
+        md += "; ".join(product['Categories'])
+        # md += f"\n- Categories:{', '.join(product['Categories'])}"
+        
+        
+        return md
+
+    col1.markdown(display_metadata(meta_df))
+    col2.image(product['Product Image'],width=300)
+else:
+    col1,col2 =st.columns(2)
+    col1.empty()
+    col2.empty()
+
 
 st.subheader("Summarized Low & High Reviews")
 st.write("(made with HuggingFace transformers)")
@@ -77,37 +132,25 @@ st.subheader("High Reviews")
 st.markdown(">" + summaries['summary-high'])
 st.divider()
 
-# def display_metadata(meta_df,iloc=0, include_details=False):
-#     # product = meta_df.iloc[iloc]
-#     # md = "#### Product Being Reviewed"
-#     md = ""
-#     md += f'\n- Product Title:\n***\"{product["Title (Raw)"]}\"***'
-#     # md += f"<p><img src='{product['Product Image']}' width=300px></p>"
-#     md += f'\n- Brand: {product["Brand"]}'
-#     md += f"\n- Price: {product['Price']}"
-#     md += f"\n- Ranked {product['Rank']} (2018)"
+def display_metadata(meta_df,iloc=0, include_details=False):
+    # product = meta_df.iloc[iloc]
+    # md = "#### Product Being Reviewed"
+    md = ""
+    md += f'\n- Product Title:\n***\"{product["Title (Raw)"]}\"***'
+    # md += f"<p><img src='{product['Product Image']}' width=300px></p>"
+    md += f'\n- Brand: {product["Brand"]}'
+    md += f"\n- Price: {product['Price']}"
+    md += f"\n- Ranked {product['Rank']} (2018)"
 
-#     md += f"\n- Categories:\n    - "
-#     md += "; ".join(product['Categories'])
-#     # md += 
-#     # md += f"\n- Categories:{', '.join(product['Categories'])}"
+    md += f"\n- Categories:\n    - "
+    md += "; ".join(product['Categories'])
+    # md += 
+    # md += f"\n- Categories:{', '.join(product['Categories'])}"
     
     
-#     return md
+    return md
 
 
-# def load_product_info(fpath):
-#     import json
-#     with open(fpath,'r') as f:
-#         product_json = json.load(f)
-        
-#     product_string = "Product Info:\n"
-#     for k,v in product_json.items():
-#         if k.lower()=='description':
-#             continue
-#         product_string+=f"\n{k} = {v}\n"
-        
-#     return product_string
 
 @st.cache_resource
 def load_vector_database(fpath_db, fpath_csv=None, metadata_columns = ['reviewerID'],
