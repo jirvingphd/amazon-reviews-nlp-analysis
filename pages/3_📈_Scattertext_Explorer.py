@@ -15,11 +15,11 @@ st.set_page_config( layout="wide",
                    page_icon="⭐️Amazon Reviews NLP EDA")
 
     
-st.sidebar.subheader("Author Information")
-with open("app-assets/author-info.html") as f:
-    author_info = f.read()
-with st.sidebar.container():
-    components.html(author_info)#"""
+# st.sidebar.subheader("Author Information")
+# with open("app-assets/author-info.html") as f:
+#     author_info = f.read()
+# with st.sidebar.container():
+#     components.html(author_info)#"""
     
 # Get Fpaths
 @st.cache_data
