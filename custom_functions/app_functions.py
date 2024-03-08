@@ -1,3 +1,42 @@
+ai_avatar ="🤖"
+user_avatar="💬"
+## Adding caching to reduce api usage
+import os
+from langchain.cache import InMemoryCache
+# from langchain.document_loaders import CSVLoader
+from langchain_community.document_loaders import CSVLoader
+# from langchain.globals import set_llm_cache
+from langchain.memory import ChatMessageHistory, ConversationBufferMemory
+from langchain.prompts import (
+    ChatPromptTemplate, PromptTemplate,
+    HumanMessagePromptTemplate,
+    MessagesPlaceholder,
+    SystemMessagePromptTemplate,
+)
+# import streamlit as st
+# import custom_functions as fn
+from langchain_openai.embeddings import OpenAIEmbeddings
+from langchain_community.vectorstores import Chroma, FAISS
+from langchain.text_splitter import CharacterTextSplitter
+from langchain_community.callbacks import StreamlitCallbackHandler
+from langchain.callbacks import StdOutCallbackHandler
+from langchain.agents import OpenAIFunctionsAgent, AgentExecutor
+from langchain_openai.chat_models import ChatOpenAI
+from langchain.schema import SystemMessage, HumanMessage, AIMessage
+from langchain.prompts import MessagesPlaceholder
+# from langchain.tools.retriever import create_retriever_tool
+from langchain_community.document_loaders import CSVLoader
+
+from langchain.agents import AgentExecutor, create_openai_tools_agent
+# Memory: agent token buffer used in original example blog post
+from langchain.agents.openai_functions_agent.agent_token_buffer_memory import AgentTokenBufferMemory
+from langchain.memory import ConversationBufferMemory
+# set_llm_cache(InMemoryCache())
+
+from langchain import hub
+# from langchain.agents import AgentExecutor, create_openai_tools_agent
+from langchain.tools.retriever import create_retriever_tool
+
 # @st.cache_data
 def load_filepaths_json(fname="config/filepaths.json"):
     ##Load in the data
@@ -9,50 +48,73 @@ def load_filepaths_json(fname="config/filepaths.json"):
     print(FPATHS.keys())
     return FPATHS
 
+def load_product_info(fpath):
+    import json
+    with open(fpath,'r') as f:
+        product_json = json.load(f)
+        
+    product_string = "Product Info:\n"
+    for k,v in product_json.items():
+        if k.lower()=='description':
+            continue
+        product_string+=f"\n{k} = {v}\n"
+        
+    return product_string
 
+# Needed for defaults for app
 FPATHS = load_filepaths_json()
-## Adding caching to reduce api usage
-import os
-from langchain.cache import InMemoryCache
-# from langchain.document_loaders import CSVLoader
-from langchain_community.document_loaders import CSVLoader
-from langchain.globals import set_llm_cache
-from langchain.memory import ChatMessageHistory, ConversationBufferMemory
-from langchain.prompts import (
-    ChatPromptTemplate, PromptTemplate,
-    HumanMessagePromptTemplate,
-    MessagesPlaceholder,
-    SystemMessagePromptTemplate,
-)
-import streamlit as st
-import custom_functions as fn
-from langchain_openai.embeddings import OpenAIEmbeddings
-from langchain_community.vectorstores import Chroma, FAISS
-from langchain.text_splitter import CharacterTextSplitter
-from langchain_community.callbacks import StreamlitCallbackHandler
-from langchain.callbacks import StdOutCallbackHandler
-from langchain.agents import OpenAIFunctionsAgent, AgentExecutor
-from langchain_openai.chat_models import ChatOpenAI
-from langchain.schema import SystemMessage, HumanMessage, AIMessage
-from langchain.prompts import MessagesPlaceholder
-from langchain.tools.retriever import create_retriever_tool
-from langchain_community.document_loaders import CSVLoader
-
-from langchain.agents import AgentExecutor, create_openai_tools_agent
-# Memory: agent token buffer used in original example blog post
-from langchain.agents.openai_functions_agent.agent_token_buffer_memory import AgentTokenBufferMemory
-from langchain.memory import ConversationBufferMemory
-# set_llm_cache(InMemoryCache())
-
-from langchain import hub
-from langchain.agents import AgentExecutor, create_openai_tools_agent
-from langchain.tools.retriever import create_retriever_tool
 
 
-def get_template_string_reviews(FPATHS):
+# @st.cache_data    
+def load_df(fpath):
+    import joblib
+    return joblib.load(fpath)
+
+# @st.cache_data
+def load_metadata(fpath):
+    import pandas as pd
+    return pd.read_json(fpath)
+
+
+
+# @st.cache_data
+def load_summaries(fpath):
+    import json
+    with open(fpath) as f:
+        summaries = json.load(f)
+    return summaries
+
+    
+
+# def fake_streaming(response):
+#     import time
+#     for word in response.split(" "):
+#         yield word + " "
+#         time.sleep(.05)		
+        
+            
+    
+
+
+
+def get_task_options(options_only=False):
+    task_prompt_dict= {
+        # "Summary of Customer Sentiment":'Provide a summary list of what 1-star reviews did not like and a summary of what did 5-star reviews liked.',
+                   'Product Recommendations':'Provide a list of 3-5 actionable business recommendations on how to improve the product.',
+                   'Marketing Recommendations':'Provide a list of 3-5 recommendations for the marketing team to on how to better set customer expectations before purchasing the product or to better target the customers who will enjoy it.'}
+    if options_only:
+        return list(task_prompt_dict.keys())
+    else:
+        return task_prompt_dict
+
+
+
+
+
+def get_template_string_reviews():
      # Create template with product info
     template = f"You are a helpful data analyst for answering questions about what customers said about a specific  Amazon product using only content from use reviews."
-    from custom_functions.app_functions import load_product_info
+    # from custom_functions.app_functions import load_product_info
     product_string = load_product_info(FPATHS['data']['app']['product-metadata-llm_json'])
 
     product_template = f" Assume all user questions are asking about the content in the user reviews. Note the product metadata is:\n```{product_string}```\n\n"
@@ -64,28 +126,48 @@ def get_template_string_reviews(FPATHS):
     return template
     
     
+def get_template_string_interpret(context_low, context_high, context_type='BERT-summary'):
+    # task_prompt_dict = get_task_options(options_only=False)
+    # system_prompt = task_prompt_dict[selected_task]
+    
+    # template_assistant = "You are a helpful assistant data scientist who uses NLP analysis of customer reviews to inform business-decision-making:"
+    # product_template = f" Assume all user questions are asking about the content in the user reviews. Note the product metadata is:\n```{product_string}```\n\n"
+    template_starter = get_template_string_reviews()
+    context = f"\nGroup Contexts:\n Here is a {context_type} of 1-star reviews: ```{context_low}```.\n\n Here is a {context_type} of 5-star reviews:```{context_high}."
+    context += f"Use the {context_type} first before using the retrieved documents."
+    template_assistant=template_starter+ context
+    return template_assistant
+    
 
 
-def get_agent(retriever=None,fpath_db=FPATHS['data']['app']['vector-db_dir'],
-              ## Updated function
-              fpath_csv = FPATHS['data']['app']['reviews-with-target-for-llm_csv'],
-              k=8, temperature=0.1, verbose=False,
-             template_string_func=get_template_string_reviews):
+
+def get_agent(retriever=None,fpath_db=None,
+              fpath_llm_csv=None, k=8, temperature=0.1, verbose=False,
+             template_string_func=None):
+    if template_string_func is None:
+        template_string_func=get_template_string_reviews
+    if fpath_db is None:
+        FPATHS = load_filepaths_json()
+        fpath_db = FPATHS['data']['app']['vector-db_dir']
+
+    if fpath_llm_csv is None:
+        FPATHS = load_filepaths_json()
+        fpath_llm_csv = FPATHS['data']['app']['reviews-with-target-for-llm_csv']
+
     
     ## Make retreieval tool
     if retriever is None:
-        retriever  = load_vector_database( fpath_db,fpath_csv, k=k, use_previous=True, as_retriever=True)#, use_previous=False)
+        retriever  = load_vector_database( fpath_db,fpath_llm_csv, k=k, use_previous=True, as_retriever=True)#, use_previous=False)
     tool = create_retriever_tool(
         retriever,
         "search_reviews",
-        "Searches and returns excerpts from Amazon user reviews.",
+        "Search Amazon custom reviews for relevant information."
     )
     tools = [tool]
     
     
    ## Get template via function for template string
     template = template_string_func()
-
 
     # Create the chatprompttemplate
     prompt_template = OpenAIFunctionsAgent.create_prompt(
@@ -96,34 +178,32 @@ def get_agent(retriever=None,fpath_db=FPATHS['data']['app']['vector-db_dir'],
     if verbose:
         print(prompt_template.messages)
         
-    llm = ChatOpenAI(temperature=temperature,streaming=True, api_key=os.getenv("OPENAI_API_KEY"))
+    llm = ChatOpenAI(temperature=temperature, api_key=os.getenv("OPENAI_API_KEY")) #streaming=True,
     agent = create_openai_tools_agent(llm, tools, prompt_template)
     
     ## Creating streamlit-friendly memory for streaming
     agent_executor = AgentExecutor(agent=agent, tools=tools,  verbose=True, #return_intermediate_steps=True,
-                                   memory=ConversationBufferMemory(memory_key="history",return_messages=True))
+                                   memory=ConversationBufferMemory(memory_key="history",return_messages=True)
+                                   )
     return agent_executor
-
-
             
-            
-def reset_agent(#fpath_db = FPATHS['data']['app']['vector-db_dir'],
-                retriever=None,
-                ai_avatar="🤖", user_avatar = "💬",
-                starter_message = "Hello, there! Enter your question here and I will check the full reviews database to provide you the best answer.",
-               get_agent_kws={}):
-    # fpath_db
-    if retriever is None:
-        retriever = st.session_state['retriever']
-    agent_exec = get_agent(retriever, **get_agent_kws)
-    agent_exec.memory.chat_memory.add_ai_message(starter_message)
-    # with chat_container:
-    st.chat_message("assistant", avatar=ai_avatar).write_stream(fake_streaming(starter_message))
-        # print_history(agent_exec)
-    return agent_exec
+# def reset_agent(#fpath_db = FPATHS['data']['app']['vector-db_dir'],
+#                 retriever=None,
+#                 ai_avatar="🤖", user_avatar = "💬",
+#                 starter_message = "Hello, there! Enter your question here and I will check the full reviews database to provide you the best answer.",
+#                get_agent_kws={}):
+#     # fpath_db
+#     if retriever is None:
+#         retriever = st.session_state['retriever']
+#     agent_exec = get_agent(retriever, **get_agent_kws)
+#     agent_exec.memory.chat_memory.add_ai_message(starter_message)
+#     # with chat_container:
+#     st.chat_message("assistant", avatar=ai_avatar).write_stream(fake_streaming(starter_message))
+#         # print_history(agent_exec)
+#     return agent_exec
     
 
-def fake_streaming(response):
+# def fake_streaming(response):
     import time
     for word in response.split(" "):
         yield word + " "
@@ -132,7 +212,7 @@ def fake_streaming(response):
             
     
 ## For steramlit try this as raw code, not a function
-def print_history(agent_executor, ai_avatar ="🤖", user_avatar="💬"):
+def print_history(agent_executor):
     # Simulate streaming for final message
 
     session_state_messages = agent_executor.memory.buffer_as_messages
@@ -151,7 +231,7 @@ def print_history(agent_executor, ai_avatar ="🤖", user_avatar="💬"):
         print()
         
 
-def display_metadata(meta_df,iloc=0, include_details=False):
+def display_metadata(meta_df,iloc=0):
     product = meta_df.iloc[iloc]
     # md = "#### Product Being Reviewed"
     md = ""
@@ -184,43 +264,49 @@ def load_product_info(fpath):
     return product_string
 
 
-@st.cache_resource
-def load_vector_database(fpath_db, fpath_csv=None, metadata_columns = ['reviewerID'],
-                         chunk_size=500, use_previous = False,
-                        #  delete=False, 
+# @st.cache_resource
+def load_vector_database(fpath_db, fpath_csv=None, metadata_columns=['reviewerID'],
+                         chunk_size=500, use_previous=False,
                          as_retriever=False, k=8, **retriever_kwargs):
-    import os
-     # Use EMbedding --> embed chunks --> vectors
-    embedding_func = OpenAIEmbeddings(api_key=os.getenv('OPENAI_API_KEY'))
-    
-    # if delete==True:
-    #     # print("Deleting previous Chroma db...")
-    #     # Set use_pervious to False
-    #     use_previous= False
-    #     # db = Chroma(persist_directory=fpath_db, 
-    #     #    embedding_function=embedding_func)
-    #     # db.delete_collection()
+    """
+    Loads or creates a vector database for document embeddings.
 
-    if use_previous==True:
+    Parameters:
+    - fpath_db (str): The file path to the vector database.
+    - fpath_csv (str, optional): The file path to the CSV file containing the documents. Required if use_previous is False or delete is True.
+    - metadata_columns (list, optional): The list of column names in the CSV file to be used as metadata for the documents. Default is ['reviewerID'].
+    - chunk_size (int, optional): The size of each chunk to split the documents into. Default is 500.
+    - use_previous (bool, optional): Whether to use the previous vector database if it exists. Default is False.
+    - as_retriever (bool, optional): Whether to return the vector database as a retriever. Default is False.
+    - k (int, optional): The number of nearest neighbors to retrieve. Required if as_retriever is True.
+    - **retriever_kwargs (optional): Additional keyword arguments to be passed to the retriever.
+
+    Returns:
+    - db (object): The vector database.
+
+    Raises:
+    - Exception: If fpath_csv is not provided when use_previous is False or delete is True.
+    """
+    import os
+    # Use EMbedding --> embed chunks --> vectors
+    embedding_func = OpenAIEmbeddings(api_key=os.getenv('OPENAI_API_KEY'))
+
+    if use_previous == True:
         print("Using previous vector db...")
         db = FAISS.load_local(fpath_db, embedding_func)
-
     else:
         print("Creating embeddings/Chromadb database")
         if fpath_csv == None:
             raise Exception("Must pass fpath_csv if use_previous==False or delete==True")
-                
+
         # Load Document --> Split into chunks
-        loader = CSVLoader(fpath_csv,metadata_columns=metadata_columns)
+        loader = CSVLoader(fpath_csv, metadata_columns=metadata_columns)
         documents = loader.load()
-        
+
         text_splitter = CharacterTextSplitter.from_tiktoken_encoder(chunk_size=chunk_size)
         docs = text_splitter.split_documents(documents)
-        
-        # db = Chroma.from_documents(docs, embedding_func, persist_directory= fpath_db)
+
         db = FAISS.from_documents(docs, embedding_func)
-        # Use persist to save to disk
-        # db.persist()
         db.save_local(fpath_db)
 
     if as_retriever:
