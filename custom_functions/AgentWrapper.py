@@ -22,18 +22,38 @@ from langchain.memory import ConversationBufferMemory
 from langchain.tools.retriever import create_retriever_tool
 from langchain.agents import create_openai_tools_agent
 from langchain.chains.base import Chain
+from pydantic import BaseModel
 
 
 class AgentWrapper(AgentExecutor):
+    FPATHS = {}
+
     def __init__(self, retriever=None, fpath_db=None, fpath_llm_csv=None, k=8, temperature=0.1, verbose=False, template_string_func=None,
-                 FPATHS_json=None, callbacks=None, **kwargs):
+                 FPATHS_json="./config/filepaths.json", callbacks=None, **kwargs):
         
+        setattr(self, "FPATHS" ,self.load_filepaths_json(FPATHS_json))
+
+        agent, tools = self.__get_agent(retriever=retriever, fpath_db=fpath_db, fpath_llm_csv=fpath_llm_csv, k=k, temperature=temperature, verbose=verbose, template_string_func=template_string_func, FPATHS_json=FPATHS_json)
+        
+        super().__init__(agent=agent, tools=tools, verbose=True,
+                            memory=ConversationBufferMemory(memory_key="history", return_messages=True)
+                            )
+        # agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True,
+                                    #    memory=ConversationBufferMemory(memory_key="history", return_messages=True))
+        # self.agent_executor = agent_executor
+        # super().__init__(self, agent=agent, tools=tools, verbose=True,memory=ConversationBufferMemory(memory_key="history", return_messages=True))
+    # @staticmethod
+    def __get_agent(self,retriever=None,fpath_db=None,
+              fpath_llm_csv=None, k=8, temperature=0.1, verbose=False,
+             template_string_func=None, FPATHS_json= "config/filepaths.json"):
+                
         # self.ai_avatar = "🤖"
         # self.user_avatar = "💬"
-        if FPATHS_json is None:
-            FPATHS_json = "config/filepaths.json"
-        self.FPATHS = self.load_filepaths_json(FPATHS_json)
-                
+        # if FPATHS_json is None:
+        #     FPATHS_json = "config/filepaths.json"
+        # self.FPATHS = self.load_filepaths_json(FPATHS_json)
+        # FPATHS = self.load_filepaths_json(FPATHS_json)
+        FPATHS = self.FPATHS
         if fpath_db is None:
             fpath_db = self.FPATHS['data']['app']['vector-db_dir']
         if fpath_llm_csv is None:  
@@ -50,6 +70,7 @@ class AgentWrapper(AgentExecutor):
 
         if retriever is None:
             retriever = self.load_vector_database(fpath_db, fpath_llm_csv, k=k, use_previous=True, as_retriever=True)
+            # self.retriever = retriever
 
         tool = create_retriever_tool(
             retriever,
@@ -69,18 +90,10 @@ class AgentWrapper(AgentExecutor):
 
         llm = ChatOpenAI(temperature=temperature, api_key=os.getenv("OPENAI_API_KEY"))
         agent = create_openai_tools_agent(llm, tools, prompt_template)
-        # self.agent = agent
-        # super().__init__(agent=agent, tools=tools, verbose=True,
-        #                     memory=ConversationBufferMemory(memory_key="history", return_messages=True)
-        #                     )        
-        super().__init__(agent=agent, tools=tools, callbacks=callbacks, **kwargs)
-
-
-        # agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True,
-                                    #    memory=ConversationBufferMemory(memory_key="history", return_messages=True))
-        # self.agent_executor = agent_executor
-        # super().__init__(self, agent=agent, tools=tools, verbose=True,memory=ConversationBufferMemory(memory_key="history", return_messages=True))
-        
+        self.agent = agent
+        self.tools = tools
+        return agent,tools
+                
     # @staticmethod
     def load_filepaths_json(self, fname="config/filepaths.json", verbose=False):
         with open(fname) as f:
@@ -88,12 +101,14 @@ class AgentWrapper(AgentExecutor):
         if verbose:
             print("Top-Level Keys in FPATHS dict:")
             print(FPATHS.keys())
+            
+        # self.FPATHS = FPATHS
         return FPATHS
 
     def load_product_info(self, fpath=None):
         if fpath is None:
-            FPATHS = self.FPATHS
-            fpath = FPATHS['data']['app']['product-metadata-llm_json']
+            # FPATHS = self.FPATHS
+            fpath = self.FPATHS['data']['app']['product-metadata-llm_json']
             
         with open(fpath, 'r') as f:
             product_json = json.load(f)
@@ -108,8 +123,8 @@ class AgentWrapper(AgentExecutor):
 
     def get_template_string_reviews(self, fpath=None):
         if fpath  is None:
-            FPATHS = self.FPATHS
-            fpath = FPATHS['data']['app']['product-metadata-llm_json']
+            # FPATHS = self.FPATHS
+            fpath = self.FPATHS['data']['app']['product-metadata-llm_json']
         product_string = self.load_product_info(fpath)
 
         template = f"You are a helpful data analyst for answering questions about what customers said about a specific Amazon product using only content from use reviews."
