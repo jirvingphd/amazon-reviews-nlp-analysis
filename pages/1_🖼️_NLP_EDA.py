@@ -317,23 +317,23 @@ with ngram_menu:
 
 
 
-@st.cache_data
-def show_ngrams(df, top_n, ngrams, text_col_selection, stopwords_list,
-                 grp1_key="Low", grp2_key="High",measure='raw_freq' ,
-               min_freq=1):
+# # @st.cache_data
+# def show_ngrams(df, top_n, ngrams, text_col_selection, stopwords_list,
+#                  grp1_key="Low", grp2_key="High",measure='raw_freq' ,
+#                min_freq=1):
 
-    group_texts = fn_get_groups_freqs_wordclouds(df, ngrams=1, #grp1_key=grp1_key, grp2_key =grp2_key,
-                                              as_freqs=False, as_tokens=True, group_col='target-rating', 
-                                              text_col = text_col_selection,
-                                         stopwords=stopwords_list) #testing stopwords
-    # try:
-    return  fn.compare_ngram_measures_df(group_texts[grp1_key], group_texts[grp2_key],
-                                            measure=measure, ngrams=ngrams,min_freq=min_freq,top_n=top_n,
-                                        group1_name=grp1_key, group2_name=grp2_key)
-    # except Exception as e:
-    #     display(e)
+#     group_texts = fn_get_groups_freqs_wordclouds(df, ngrams=1, #grp1_key=grp1_key, grp2_key =grp2_key,
+#                                               as_freqs=False, as_tokens=True, group_col='target-rating', 
+#                                               text_col = text_col_selection,
+#                                          stopwords=stopwords_list) #testing stopwords
+#     # try:
+#     return  fn.compare_ngram_measures_df(group_texts[grp1_key], group_texts[grp2_key],
+#                                             measure=measure, ngrams=ngrams,min_freq=min_freq,top_n=top_n,
+#                                         group1_name=grp1_key, group2_name=grp2_key)
+#     # except Exception as e:
+#     #     display(e)
         
-ngrams_df = show_ngrams(df,top_n=top_n, ngrams=ngram_n,text_col_selection=text_col_selection,stopwords_list=stopwords_list)
+ngrams_df =fn.show_ngrams(df,top_n=top_n, ngrams=ngram_n,text_col_selection=text_col_selection,stopwords_list=stopwords_list)
 # st.dataframe(ngrams_df)
 
 if use_plotly:
