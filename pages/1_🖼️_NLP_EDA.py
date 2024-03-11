@@ -300,12 +300,13 @@ c3.markdown('##### Download figure.')
 fig = plt.figure()
 filename = c3.text_input("Filename (png)", value='wordcloud-comparison.png')
 download_fig_button =c3.download_button("Download image.", data =download_fig(fig),file_name=filename,mime="image/png", )
-group_texts = fn_get_groups_freqs_wordclouds(df,ngrams=ngram_n, as_freqs=True,group_col='target-rating', text_col = text_col_selection,
-                                    stopwords=stopwords_list )
 
 
 with fig_container:
     with st.spinner("Creating Word Clouds..."):
+        group_texts = fn_get_groups_freqs_wordclouds(df,ngrams=ngram_n, as_freqs=True,group_col='target-rating', text_col = text_col_selection,
+                                    stopwords=stopwords_list )
+
         fig  = fn.make_wordclouds_from_freqs(group_texts,stopwords=stopwords_list,min_font_size=min_font_size, max_words=max_words,
                                             figsize=(16,10))
         # with fig_container:
@@ -314,7 +315,7 @@ with fig_container:
 st.divider()
 
 
-# ## Add creating ngrams
+# ## Add creating ngrams∏
 # st.subheader('N-Gram Bar Graphs')
 # ngram_menu = st.container(border=True)
 # ngram_fig_container = st.container()
