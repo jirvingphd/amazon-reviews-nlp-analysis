@@ -12,7 +12,7 @@ import plotly.io as pio
 pio.templates.default='streamlit'
 # Changing the Layout
 st.set_page_config( layout="wide", 
-                   page_icon="⭐️Amazon Reviews NLP EDA")
+                   page_icon="📈 Scattertext Explorer")
 
     
 # st.sidebar.subheader("Author Information")
@@ -89,10 +89,11 @@ with st.spinner("Loading explorer..."):
 st.markdown('### ☝️ Scroll up to return to scatterplot')
 
 
-st.sidebar.subheader("Author Information")
-    
 with open("app-assets/author-info.md") as f:
     author_info = f.read()
     
-with st.sidebar.container():
+with st.sidebar.container(border=True):
+    st.subheader("Author Information")
+
     st.markdown(author_info, unsafe_allow_html=True)
+    

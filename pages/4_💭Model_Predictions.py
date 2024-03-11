@@ -11,7 +11,7 @@ import plotly.express as px
 import plotly.io as pio
 pio.templates.default='streamlit'
 # Changing the Layout
-st.set_page_config( #layout="wide", 
+st.set_page_config( layout="centered", 
                    page_icon="🤔 Model Predictions")
 
 
@@ -21,15 +21,7 @@ with open("config/filepaths.json") as f:
     FPATHS = json.load(f)
 
 fpath_best_ml = FPATHS['results']['best-ml-clf_joblib']
-    
-st.sidebar.subheader("Author Information")
-    
-with open("app-assets/author-info.md") as f:
-    author_info = f.read()
-    
-with st.sidebar.container():
-    st.markdown(author_info, unsafe_allow_html=True)
-    
+
 
 @st.cache_resource
 def load_best_model_results(fpath_results_joblib):
@@ -146,44 +138,48 @@ st.header("Model Evaluation")
 # show_model_params =col3.checkbox("Show model params.", value=False)
 st.sidebar.header("Model Evaluation Options")
 # col1,col2,col3 = st.columns(3)
-show_train = st.sidebar.checkbox("Show training data.", value=True)
-show_test = st.sidebar.checkbox("Show test data.", value=True)
-show_model_params =st.sidebar.checkbox("Show model params.", value=False)
+# show_train = st.sidebar.checkbox("Show training data.", value=True)
+# show_test = st.sidebar.checkbox("Show test data.", value=True)
+# show_model_params =st.sidebar.checkbox("Show model params.", value=False)
 
 # show_train = st.checkbox("Show training data.", value=True)
 # show_test = st.checkbox("Show test data.",value=True)
 # show_model_params =st.checkbox("Show model params.", value=False)
 
 # st.subheader("Machine Learning Model")
-if st.checkbox("Show model evaluation results."):
+# c1, c2 = st.columns(2)
+with st.spinner("Loading model results..."):
+    results = load_best_model_results(FPATHS['results']['best-ml-clf_joblib'])
+        
+        
+# st.subheader("Model Evaluation Results")
+with st.expander("Show results for the training data."):
     st.markdown('> 👈 ***Select the results that are displayed via the sidebar.***')
 
-    with st.spinner("Loading model results..."):
-        results = load_best_model_results(FPATHS['results']['best-ml-clf_joblib'])
-        
-    if show_train == True:
+
+    # if show_train == True:
         # col1,col2=st.columns(2)
         # y_pred_train = clf_bayes_pipe.predict(X_train)
-        # report_str, conf_mat = classification_metrics_streamlit(y_train, y_pred_train, label='Training Data')
-        st.text(results['train']['classification_report'])
-        st.pyplot(results['train']['confusion_matrix'])
-        st.text("\n\n")
+    # report_str, conf_mat = classification_metrics_streamlit(y_train, y_pred_train, label='Training Data')
+    st.text(results['train']['classification_report'])
+    st.pyplot(results['train']['confusion_matrix'])
+    st.text("\n\n")
 
+with st.expander("Show results for the test data."):
 
-    if show_test == True: 
-        # y_pred_test = clf_bayes_pipe.predict(X_test)
-        # report_str, conf_mat = classification_metrics_streamlit(y_test, y_pred_test, cmap='Reds',label='Test Data')
-        st.text(results['test']['classification_report'])
-        st.pyplot(results['test']['confusion_matrix'])
-        st.text("\n\n")
+    # if show_test == True: 
+    # y_pred_test = clf_bayes_pipe.predict(X_test)
+    # report_str, conf_mat = classification_metrics_streamlit(y_test, y_pred_test, cmap='Reds',label='Test Data')
+    st.text(results['test']['classification_report'])
+    st.pyplot(results['test']['confusion_matrix'])
+    st.text("\n\n")
 
-    if show_model_params:
-        st.markdown("####  Model Parameters:")
-        st.write(results['model'].get_params())
+with st.expander("Model Parameters:"):
+    st.write(results['model'].get_params())
 
-else:
-    st.empty()
-## Load files and models
+# else:
+#     st.empty()
+# ## Load files and models
 st.divider()
 
 
@@ -230,3 +226,13 @@ st.divider()
 	
 
 # st.divider()
+    
+    
+with open("app-assets/author-info.md") as f:
+    author_info = f.read()
+    
+with st.sidebar.container(border=True):
+    st.subheader("Author Information")
+
+    st.markdown(author_info, unsafe_allow_html=True)
+    

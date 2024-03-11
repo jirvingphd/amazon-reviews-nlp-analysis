@@ -35,7 +35,7 @@ from langchain.memory import ConversationBufferMemory
 
 # Changing the Layout
 st.set_page_config( #layout="wide", 
-                   page_icon="🖼️Amazon Reviews NLP EDA")
+                   page_icon="🖼️ NLP EDA")
 
 
 
@@ -60,50 +60,50 @@ fpath_db = FPATHS['data']['app']['vector-db_dir']
         
         
 
-if 'retriever' not in st.session_state:
-    # retriever  = load_vector_database( fpath_db,fpath_llm_csv, k=8, use_previous=False, as_retriever=True)    
-    if os.path.exists(fpath_db):
-        retriever = fn.load_vector_database(fpath_db, fpath_llm_csv, use_previous=True, as_retriever=True)
-    else:
-        retriever = fn.load_vector_database(fpath_db, fpath_llm_csv, use_previous=False, as_retriever=True)
+# if 'retriever' not in st.session_state:
+#     # retriever  = load_vector_database( fpath_db,fpath_llm_csv, k=8, use_previous=False, as_retriever=True)    
+#     if os.path.exists(fpath_db):
+#         retriever = fn.load_vector_database(fpath_db, fpath_llm_csv, use_previous=True, as_retriever=True)
+#     else:
+#         retriever = fn.load_vector_database(fpath_db, fpath_llm_csv, use_previous=False, as_retriever=True)
     
-    st.session_state['retriever'] = retriever
+#     st.session_state['retriever'] = retriever
 
 
 
 # Create chat container early
     
-def display_metadata(meta_df,iloc=0, include_details=False):
-    # product = meta_df.iloc[iloc]
-    # md = "#### Product Being Reviewed"
-    md = ""
-    md += f'\n- Product Title:\n***\"{product["Title (Raw)"]}\"***'
-    # md += f"<p><img src='{product['Product Image']}' width=300px></p>"
-    md += f'\n- Brand: {product["Brand"]}'
-    md += f"\n- Price: {product['Price']}"
-    md += f"\n- Ranked {product['Rank']} (2018)"
+# def display_metadata(meta_df,iloc=0, include_details=False):
+#     # product = meta_df.iloc[iloc]
+#     # md = "#### Product Being Reviewed"
+#     md = ""
+#     md += f'\n- Product Title:\n***\"{product["Title (Raw)"]}\"***'
+#     # md += f"<p><img src='{product['Product Image']}' width=300px></p>"
+#     md += f'\n- Brand: {product["Brand"]}'
+#     md += f"\n- Price: {product['Price']}"
+#     md += f"\n- Ranked {product['Rank']} (2018)"
 
-    md += f"\n- Categories:\n    - "
-    md += "; ".join(product['Categories'])
-    # md += 
-    # md += f"\n- Categories:{', '.join(product['Categories'])}"
+#     md += f"\n- Categories:\n    - "
+#     md += "; ".join(product['Categories'])
+#     # md += 
+#     # md += f"\n- Categories:{', '.join(product['Categories'])}"
     
     
-    return md
+#     return md
 
 
-def load_product_info(fpath):
-    import json
-    with open(fpath,'r') as f:
-        product_json = json.load(f)
+# def load_product_info(fpath):
+#     import json
+#     with open(fpath,'r') as f:
+#         product_json = json.load(f)
         
-    product_string = "Product Info:\n"
-    for k,v in product_json.items():
-        if k.lower()=='description':
-            continue
-        product_string+=f"\n{k} = {v}\n"
+#     product_string = "Product Info:\n"
+#     for k,v in product_json.items():
+#         if k.lower()=='description':
+#             continue
+#         product_string+=f"\n{k} = {v}\n"
         
-    return product_string
+#     return product_string
     
 ## Title /header
 # st.header("Exploratory Data Analysis of Amazon Reviews ")
@@ -155,40 +155,47 @@ product= meta_df.iloc[0]
 # st.divider()
 # st.subheader("Exploratory Analysis ")
 st.divider()
-show_product= st.checkbox("Show Product Information", value=False)
+# show_product= st.checkbox("Show Product Information", value=False)
+# with st.container(border=True):
+# if show_product==True:
+with st.expander("Product Information",expanded=True):
+    # st.subheader("Product Information")
+        col1, col2 = st.container(border=True).columns(2)
+        col1.markdown(fn.display_metadata(meta_df))
+        col2.image(product['Product Image'], width=300)
 
-if show_product==True:
-    st.subheader("Product Information")
+# if show_product==True:
+#     st.subheader("Product Information")
 
 
-    # st.markdown(f'Product Title: ***{product["Title (Raw)"]}***')
-    # st.divider()
-    col1,col2 = st.columns(2)
+#     # st.markdown(f'Product Title: ***{product["Title (Raw)"]}***')
+#     # st.divider()
+#     col1,col2 = st.columns(2)
 
-    # @st.cache_data
-    def display_metadata(meta_df,iloc=0):
-        # product = meta_df.iloc[iloc]
-        # md = "#### Product Being Reviewed"
-        md = ""
-        md += f'\n- Product Title:\n***\"{product["Title (Raw)"]}\"***'
-        # md += f"<p><img src='{product['Product Image']}' width=300px></p>"
-        md += f'\n- Brand: {product["Brand"]}'
-        md += f"\n- Price: {product['Price']}"
-        md += f"\n- Ranked {product['Rank']} (2018)"
+#     # @st.cache_data
+#     def display_metadata(meta_df,iloc=0):
+#         # product = meta_df.iloc[iloc]
+#         # md = "#### Product Being Reviewed"
+#         md = ""
+#         md += f'\n- Product Title:\n***\"{product["Title (Raw)"]}\"***'
+#         # md += f"<p><img src='{product['Product Image']}' width=300px></p>"
+#         md += f'\n- Brand: {product["Brand"]}'
+#         md += f"\n- Price: {product['Price']}"
+#         md += f"\n- Ranked {product['Rank']} (2018)"
 
-        md += f"\n- Categories:\n    - "
-        md += "; ".join(product['Categories'])
-        # md += f"\n- Categories:{', '.join(product['Categories'])}"
+#         md += f"\n- Categories:\n    - "
+#         md += "; ".join(product['Categories'])
+#         # md += f"\n- Categories:{', '.join(product['Categories'])}"
         
         
-        return md
+#         return md
 
-    col1.markdown(display_metadata(meta_df))
-    col2.image(product['Product Image'],width=300)
-else:
-    col1,col2 =st.columns(2)
-    col1.empty()
-    col2.empty()
+#     col1.markdown(display_metadata(meta_df))
+#     col2.image(product['Product Image'],width=300)
+# else:
+#     col1,col2 =st.columns(2)
+#     col1.empty()
+#     col2.empty()
 
 
 
@@ -224,14 +231,14 @@ add_stopwords_str = settings_menu.text_area("Enter list of words to exclude:",va
 stopwords_list = fn.get_stopwords_from_string(add_stopwords_str)
 
 
-st.sidebar.divider()
+# st.sidebar.divider()
 
 
 
 ## word clouds
 
-st.divider()
-st.subheader("Word Clouds")
+# st.divider()
+st.header("Word Clouds")
 
 
 
@@ -266,7 +273,7 @@ with st.container(border=True):
     c1.markdown("#### Text Preprocesing")
     c1.markdown(">👈 *Change Text Preprocessing Options on the sidebar.*")
     
-    c1.markdown("- Recommended Settings:\n    - Tokenization = 'Original Text' \n    - ngrams=Bigrams/Trigrams")
+    # c1.markdown("- Recommended Settings:\n    - Tokenization = 'Original Text' \n    - ngrams=Bigrams/Trigrams")
     group_texts = fn_get_groups_freqs_wordclouds(df,ngrams=ngram_n, as_freqs=True,group_col='target-rating', text_col = text_col_selection,
                                         stopwords=stopwords_list )
 # preview_group_freqs(group_texts)
@@ -294,7 +301,7 @@ ngram_menu = st.container(border=True)
 with ngram_menu:
     col1,col2,col3 = ngram_menu.columns(3)
     col1.markdown("> 👈 *Change Text Preprocessing Options on the sidebar*")
-    col1.markdown("- Recommended Settings:\n    - Tokenization = 'Lemmatized Text'\n    - ngrams=Trigrams")
+    # col1.markdown("- Recommended Settings:\n    - Tokenization = 'Lemmatized Text'\n    - ngrams=Trigrams")
 
     # ngrams = st.radio('n-grams', [2,3,4],horizontal=True,index=1)
     # top_n = st.select_slider('Compare Top # Ngrams',[10,15,20,25],value=15)
@@ -406,17 +413,11 @@ def fake_streaming(response):
 #     st.session_state['agent'] = get_agent(retriever=s)
 #     response = st.session_state['agent'].invoke({'input'})
 
-
-st.sidebar.subheader("Author Information")
-# with open("app-assets/author-info.html") as f:
-#     author_info = f.read()
-    
-# with st.sidebar.container():
-#     components.html(author_info)#"""
-    
-    
 with open("app-assets/author-info.md") as f:
     author_info = f.read()
     
-with st.sidebar.container():
-    st.markdown(author_info, unsafe_allow_html=True)#"""
+with st.sidebar.container(border=True):
+    st.subheader("Author Information")
+
+    st.markdown(author_info, unsafe_allow_html=True)
+    

@@ -1,16 +1,17 @@
 from .app_functions import *
+from .factory import AgentFactory
 
 
-def load_filepaths_json(fname="config/filepaths.json"):
+def load_filepaths_json(fname="config/filepaths.json", verbose=False):
     ##Load in the data
     import json
     with open(fname) as f:
         FPATHS = json.load(f)
-    print("Top-Level Keys in FPATHS dict:")
-    # [print(f'- {k}') for k in FPATHS.keys()]
-    print(FPATHS.keys())
+    if verbose:
+        print("Top-Level Keys in FPATHS dict:")
+        # [print(f'- {k}') for k in FPATHS.keys()]
+        print(FPATHS.keys())
     return FPATHS
-
 
 # from IPython.display import display
 def mute_color(color_name, saturation_adjustment=0.5, lightness_adjustment=1.2):
