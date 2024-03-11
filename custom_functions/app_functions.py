@@ -36,6 +36,7 @@ from langchain.memory import ConversationBufferMemory
 from langchain import hub
 # from langchain.agents import AgentExecutor, create_openai_tools_agent
 from langchain.tools.retriever import create_retriever_tool
+import streamlit as st
 
 # @st.cache_data
 def load_filepaths_json(fname="config/filepaths.json", verbose=False):
@@ -87,6 +88,12 @@ def load_summaries(fpath):
 
     
 
+def fake_streaming(response):
+    import time
+    for word in response.split(" "):
+        yield word + " "
+        time.sleep(.05)		
+            
 # def fake_streaming(response):
 #     import time
 #     for word in response.split(" "):

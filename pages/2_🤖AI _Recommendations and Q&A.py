@@ -30,19 +30,19 @@ FPATHS = fn.load_filepaths_json()
 fpath_llm_csv = FPATHS['data']['app']['reviews-with-target-for-llm_csv']
 fpath_db = FPATHS['data']['app']['vector-db_dir']
 
-# @st.cache_data    
+@st.cache_data    
 def load_df(fpath):
     import joblib
     return joblib.load(fpath)
 
-# @st.cache_data
+@st.cache_data
 def load_metadata(fpath):
     import pandas as pd
     return pd.read_json(fpath)
 
 
 
-# @st.cache_data
+@st.cache_data
 def load_summaries(fpath):
     import json
     with open(fpath) as f:
@@ -64,18 +64,18 @@ st.header("Summaries & Recommendations")
 st.markdown('We leveraged pre-trained summarization models from HuggingFace transformers to summarize all low and all high reviews. These summaries will be the contextual information that ChatGPT will use to provide the final conclusions.')
 
 st.divider()
-def load_product_info(fpath):
-    import json
-    with open(fpath,'r') as f:
-        product_json = json.load(f)
+# def load_product_info(fpath):
+#     import json
+#     with open(fpath,'r') as f:
+#         product_json = json.load(f)
         
-    product_string = "Product Info:\n"
-    for k,v in product_json.items():
-        if k.lower()=='description':
-            continue
-        product_string+=f"\n{k} = {v}\n"
+#     product_string = "Product Info:\n"
+#     for k,v in product_json.items():
+#         if k.lower()=='description':
+#             continue
+#         product_string+=f"\n{k} = {v}\n"
         
-    return product_string
+#     return product_string
 
 
 show_product= st.checkbox("Show Product Information", value=True)
@@ -167,11 +167,11 @@ def print_history(agent_executor,ai_avatar  = "🤖", user_avatar = "💬"):
         print()
 
 
-def fake_streaming(response):
-    import time
-    for word in response.split(" "):
-        yield word + " "
-        time.sleep(.05)		
+# def fake_streaming(response):
+#     import time
+#     for word in response.split(" "):
+#         yield word + " "
+#         time.sleep(.05)		
             
             
 def reset_agent(#fpath_db = FPATHS['data']['app']['vector-db_dir'],
@@ -179,7 +179,8 @@ def reset_agent(#fpath_db = FPATHS['data']['app']['vector-db_dir'],
                 starter_message = "Hello, there! Enter your question here and I will check the full reviews database to provide you the best answer.",
                get_agent_kws={}):
     # fpath_db
-    agent_exec = fn.get_agent(retriever, **get_agent_kws)
+    agent_factory = fn.AgentFactory()
+    agent_exec = agent_factory.get_agent(retriever=retriever, **get_agent_kws)
     print("\n\n\n",type(agent_exec),"\n\n")
     agent_exec.memory.chat_memory.add_ai_message(starter_message)
     # with chat_container:
@@ -249,8 +250,9 @@ if 'agent' not in st.session_state:
 
 
 if 'agent-summarize' not in st.session_state:
-    st.session_state['agent-summarize'] = fn.get_agent(retriever=retriever,#st.session_state['retriever'] ,
-        template_string_func=lambda: fn.get_template_string_interpret(context_low=summaries['summary-low'],
+    factory = fn.AgentFactory()
+    st.session_state['agent-summarize'] = factory.get_agent(retriever=retriever,#st.session_state['retriever'] ,
+        template_string_func=lambda: factory.get_template_string_interpret(context_low=summaries['summary-low'],
                                                                    context_high=summaries['summary-high'])
     )
 
