@@ -38,14 +38,15 @@ from langchain import hub
 from langchain.tools.retriever import create_retriever_tool
 
 # @st.cache_data
-def load_filepaths_json(fname="config/filepaths.json"):
+def load_filepaths_json(fname="config/filepaths.json", verbose=False):
     ##Load in the data
     import json
     with open(fname) as f:
         FPATHS = json.load(f)
-    print("Top-Level Keys in FPATHS dict:")
-    # [print(f'- {k}') for k in FPATHS.keys()]
-    print(FPATHS.keys())
+    if verbose:
+        print("Top-Level Keys in FPATHS dict:")
+        # [print(f'- {k}') for k in FPATHS.keys()]
+        print(FPATHS.keys())
     return FPATHS
 
 def load_product_info(fpath):
@@ -143,15 +144,17 @@ def get_template_string_interpret(context_low, context_high, context_type='BERT-
 
 def get_agent(retriever=None,fpath_db=None,
               fpath_llm_csv=None, k=8, temperature=0.1, verbose=False,
-             template_string_func=None):
+             template_string_func=None, return_executor=True):
     if template_string_func is None:
         template_string_func=get_template_string_reviews
+        
+    
     if fpath_db is None:
-        FPATHS = load_filepaths_json()
+        FPATHS = load_filepaths_json(verbose=False)
         fpath_db = FPATHS['data']['app']['vector-db_dir']
 
     if fpath_llm_csv is None:
-        FPATHS = load_filepaths_json()
+        FPATHS = load_filepaths_json(verbose=False)
         fpath_llm_csv = FPATHS['data']['app']['reviews-with-target-for-llm_csv']
 
     
@@ -181,11 +184,16 @@ def get_agent(retriever=None,fpath_db=None,
     llm = ChatOpenAI(temperature=temperature, api_key=os.getenv("OPENAI_API_KEY")) #streaming=True,
     agent = create_openai_tools_agent(llm, tools, prompt_template)
     
-    ## Creating streamlit-friendly memory for streaming
-    agent_executor = AgentExecutor(agent=agent, tools=tools,  verbose=True, #return_intermediate_steps=True,
+    if return_executor==False:
+        print("Returning agent and tools separately")
+        return agent, tool, llm
+    else:
+        print("Returning agent executor")
+        ## Creating streamlit-friendly memory for streaming
+        agent_executor = AgentExecutor(agent=agent, tools=tools,  verbose=True, #return_intermediate_steps=True,
                                    memory=ConversationBufferMemory(memory_key="history",return_messages=True)
                                    )
-    return agent_executor
+        return agent_executor
             
 # def reset_agent(#fpath_db = FPATHS['data']['app']['vector-db_dir'],
 #                 retriever=None,
