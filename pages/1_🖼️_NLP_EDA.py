@@ -296,7 +296,7 @@ c2.markdown("##### WordCloud Options")
 min_font_size = c2.number_input("Minumum Font Size",min_value=4, max_value=50,value=6, step=1)
 max_words = c2.number_input('Maximum # of Words', min_value=10, max_value=1000, value=200, step=5)
 
-c3.markdown('##### Download word figure.')
+c3.markdown('##### Download figure.')
 fig = plt.figure()
 filename = c3.text_input("Filename (png)", value='wordcloud-comparison.png')
 download_fig_button =c3.download_button("Download image.", data =download_fig(fig),file_name=filename,mime="image/png", )
