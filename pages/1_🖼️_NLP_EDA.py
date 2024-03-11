@@ -237,8 +237,8 @@ stopwords_list = fn.get_stopwords_from_string(add_stopwords_str)
 
 ## word clouds
 
-# st.divider()
-st.header("Word Clouds")
+st.divider()
+st.subheader("Word Clouds")
 
 
 
@@ -273,7 +273,7 @@ with st.container(border=True):
     c1.markdown("#### Text Preprocesing")
     c1.markdown(">👈 *Change Text Preprocessing Options on the sidebar.*")
     
-    # c1.markdown("- Recommended Settings:\n    - Tokenization = 'Original Text' \n    - ngrams=Bigrams/Trigrams")
+    c1.markdown("- Recommended Settings:\n    - Tokenization = 'Original Text' \n    - ngrams=Bigrams/Trigrams")
     group_texts = fn_get_groups_freqs_wordclouds(df,ngrams=ngram_n, as_freqs=True,group_col='target-rating', text_col = text_col_selection,
                                         stopwords=stopwords_list )
 # preview_group_freqs(group_texts)
@@ -301,7 +301,7 @@ ngram_menu = st.container(border=True)
 with ngram_menu:
     col1,col2,col3 = ngram_menu.columns(3)
     col1.markdown("> 👈 *Change Text Preprocessing Options on the sidebar*")
-    # col1.markdown("- Recommended Settings:\n    - Tokenization = 'Lemmatized Text'\n    - ngrams=Trigrams")
+    col1.markdown("- Recommended Settings:\n    - Tokenization = 'Lemmatized Text'\n    - ngrams=Trigrams")
 
     # ngrams = st.radio('n-grams', [2,3,4],horizontal=True,index=1)
     # top_n = st.select_slider('Compare Top # Ngrams',[10,15,20,25],value=15)
@@ -311,7 +311,25 @@ with ngram_menu:
     filename = col3.text_input("Filename (png)", key='flilename_mgrams',value='ngram-comparison.png')
     download_fig_button_ngram =col3.download_button("Download image.",key='download_ngram', data =download_fig(fig),file_name=filename,mime="image/png",)
     ## Compare n-grams
-    
+
+
+
+@st.cache_data
+def show_ngrams(df, top_n, ngrams, text_col_selection, stopwords_list,
+                 grp1_key="Low", grp2_key="High",measure='raw_freq' ,
+               min_freq=1):
+
+    group_texts = fn_get_groups_freqs_wordclouds(df, ngrams=1, #grp1_key=grp1_key, grp2_key =grp2_key,
+                                              as_freqs=False, as_tokens=True, group_col='target-rating', 
+                                              text_col = text_col_selection,
+                                         stopwords=stopwords_list) #testing stopwords
+    # try:
+    return  fn.compare_ngram_measures_df(group_texts[grp1_key], group_texts[grp2_key],
+                                            measure=measure, ngrams=ngrams,min_freq=min_freq,top_n=top_n,
+                                        group1_name=grp1_key, group2_name=grp2_key)
+    # except Exception as e:
+    #     display(e)
+        
 ngrams_df = fn.show_ngrams(df,top_n=top_n, ngrams=ngram_n,text_col_selection=text_col_selection,stopwords_list=stopwords_list)
 # st.dataframe(ngrams_df)
 
@@ -333,7 +351,7 @@ def get_template_string(context_low=ngrams_df.loc[:,'Low'].to_string(), context_
     # task_prompt_dict = get_task_options(options_only=False)
     # system_prompt = task_prompt_dict[selected_task]
     template_starter = f"You are a helpful data analyst for answering questions about what customers said about a specific  Amazon product using only content from use reviews."
-    product_string = load_product_info(FPATHS['data']['app']['product-metadata-llm_json'])
+    product_string = fn.load_product_info(FPATHS['data']['app']['product-metadata-llm_json'])
 
     product_template = f" Assume all user questions are asking about the content in the user reviews. Note the product metadata is:\n```{product_string}```\n\n"
     template+=product_template
