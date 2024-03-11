@@ -330,7 +330,7 @@ def show_ngrams(df, top_n, ngrams, text_col_selection, stopwords_list,
     # except Exception as e:
     #     display(e)
         
-ngrams_df = fn.show_ngrams(df,top_n=top_n, ngrams=ngram_n,text_col_selection=text_col_selection,stopwords_list=stopwords_list)
+ngrams_df = show_ngrams(df,top_n=top_n, ngrams=ngram_n,text_col_selection=text_col_selection,stopwords_list=stopwords_list)
 # st.dataframe(ngrams_df)
 
 if use_plotly:
