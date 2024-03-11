@@ -246,7 +246,7 @@ st.subheader("Word Clouds")
 @st.cache_data
 def fn_get_groups_freqs_wordclouds(df,ngrams=ngram_n, as_freqs=True, 
                                         group_col='target-rating', text_col = text_col_selection,
-                                        stopwords=stopwords_list):
+                                        stopwords=stopwords_list,**kwargs):
     kwargs = locals()
     group_texts = fn.get_groups_freqs_wordclouds(**kwargs) #testing stopwords
     return group_texts
