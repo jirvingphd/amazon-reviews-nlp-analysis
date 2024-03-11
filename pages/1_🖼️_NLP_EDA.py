@@ -247,7 +247,10 @@ st.subheader("Word Clouds")
 def fn_get_groups_freqs_wordclouds(df,ngrams=ngram_n, as_freqs=True, 
                                         group_col='target-rating', text_col = text_col_selection,
                                         stopwords=stopwords_list,**kwargs):
-    kws = locals()
+    # kws = locals()
+    kws = dict(df=df, ngrams=ngrams, as_freqs=as_freqs, group_col=group_col, text_col = text_col,
+               stopwords=stopwords)
+    kws.update(kwargs)
     group_texts = fn.get_groups_freqs_wordclouds(**kws) #testing stopwords
     return group_texts
 
