@@ -41,14 +41,21 @@ from langchain.tools.retriever import create_retriever_tool
 
     
 from functools import wraps
+import joblib, json, os
+import pandas as pd
 
-class AgentFactory:
+class AgentFactory():
     """
     A factory class for creating agents and loading data for Amazon reviews NLP analysis.
     """
 
-    import joblib, json, os
-
+    def __str__(self):
+        msg = ">> AgentFactory class for creating LangChain AgentExecutor & loading Amazon reviews NLP analysis."
+        # print(msg)
+        return msg
+    def __repr__(self):
+        return self.__str__()
+    
     def __init__(self, filepath_json="config/filepaths.json"):
         """
         Initializes the AgentFactory object.
@@ -122,7 +129,6 @@ class AgentFactory:
         Returns:
         - DataFrame: The loaded metadata dataframe.
         """
-        import pandas as pd
         return pd.read_json(fpath)
 
     def load_summaries(cls, fpath):
@@ -284,6 +290,8 @@ class AgentFactory:
             return db.as_retriever(k=k, **retriever_kwargs)
         else:
             return db
+
+
 
 # # @classmethod
 # def print_history(cls, agent_executor):
