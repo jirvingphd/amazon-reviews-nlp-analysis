@@ -191,14 +191,20 @@ def get_template_string_interpret(context_low, context_high, context_type='BERT-
     return template_assistant
 
 
-def print_history(agent_executor):
+def print_history(agent_executor=None, combined_memory=None, streamlit=True):
     """
     Print the conversation history.
 
     Parameters:
     - agent_executor (AgentExecutor): The agent executor object.
     """
-    session_state_messages = agent_executor.memory.buffer_as_messages
+    if agent_executor is not None:
+        session_state_messages = agent_executor.memory.buffer_as_messages
+    elif combined_memory is not None:
+        session_state_messages = combined_memory
+    else:
+        raise Exception("Either agent_executor or combined_memory must be provided.")
+        
     for msg in session_state_messages:
         if isinstance(msg, AIMessage):
             print(f"Assistant: {msg.content}")
@@ -255,7 +261,7 @@ def load_vector_database(fpath_db, fpath_csv=None, metadata_columns=['reviewerID
 
     if use_previous == True:
         print("Using previous vector db...")
-        db = FAISS.load_local(fpath_db, embedding_func)
+        db = FAISS.load_local(fpath_db, embedding_func, allow_dangerous_deserialization=True)
     else:
         print("Creating embeddings/Chromadb database")
         if fpath_csv == None:
