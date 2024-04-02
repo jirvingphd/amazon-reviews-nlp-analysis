@@ -12,7 +12,8 @@ import plotly.io as pio
 pio.templates.default='streamlit'
 # Changing the Layout
 st.set_page_config( layout="wide", 
-                   page_title="📈 Scattertext Explorer")
+                   page_icon='📈',
+                   page_title="Scattertext Explorer")
 
     
 # st.sidebar.subheader("Author Information")

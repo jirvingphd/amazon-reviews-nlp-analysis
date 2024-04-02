@@ -25,7 +25,7 @@ from langchain.memory.chat_message_histories.streamlit import StreamlitChatMessa
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Set page configuration
-st.set_page_config(page_title="🤖AI Recommendations")
+st.set_page_config(page_title="AI Recommendations", page_icon="🤖")
 
 # Load file paths
 FPATHS = fn.load_filepaths_json()

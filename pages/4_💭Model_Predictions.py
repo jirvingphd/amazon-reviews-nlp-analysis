@@ -12,7 +12,8 @@ import plotly.io as pio
 pio.templates.default='streamlit'
 # Changing the Layout
 st.set_page_config( layout="centered", 
-                   page_icon="💭 Model Predictions")
+                   page_icon='💭 ',
+                   page_title="Model Predictions")
 
 
 ##Load in the data

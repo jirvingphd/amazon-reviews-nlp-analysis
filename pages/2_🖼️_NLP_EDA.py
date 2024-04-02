@@ -36,7 +36,7 @@ from langchain.memory import ConversationBufferMemory
 
 # Changing the Layout
 st.set_page_config( #layout="wide", 
-                   page_title="🖼️ NLP EDA")
+                   page_title="NLP EDA", page_icon="🖼️")
 
 
 

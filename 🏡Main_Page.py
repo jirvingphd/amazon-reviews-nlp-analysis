@@ -17,7 +17,7 @@ import plotly.io as pio
 pio.templates.default = 'streamlit'
 
 # Changing the Layout
-st.set_page_config(page_title="🏡Amazon Reviews NLP Dash")
+st.set_page_config(page_title="Amazon Reviews NLP Dash", page_icon="🏡")
 
 ## Load in the data
 with open("config/filepaths.json") as f:
