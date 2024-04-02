@@ -49,7 +49,8 @@ st.divider()
 ## VISIBLE APP COMPONENTS CONTINUE HERE
 st.header("Get Model Predictions")
 
-X_to_pred = st.text_area("### Enter text to predict here:", value="I've tried many low carb noodles over the years and I have to say that I was shocked with how bad these miracle noodles were!")
+X_to_pred = st.text_area("### Enter text to predict here:", 
+                         value="The noodles had a weird rubbery texture.")
 
 ## Lime Explanation Fucntions
 from lime.lime_text import LimeTextExplainer
