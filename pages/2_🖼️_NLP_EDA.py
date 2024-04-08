@@ -1,6 +1,7 @@
 import streamlit as st
 import streamlit.components.v1 as components
 import pandas as pd
+import matplotlib.pyplot as plt
 import numpy as np
 import os
 import joblib
@@ -34,8 +35,8 @@ from langchain.agents.openai_functions_agent.agent_token_buffer_memory import Ag
 from langchain.memory import ConversationBufferMemory
 
 # Changing the Layout
-st.set_page_config( layout="wide", 
-                   page_icon="⭐️Amazon Reviews NLP EDA")
+st.set_page_config( #layout="wide", 
+                   page_title="NLP EDA", page_icon="🖼️")
 
 
 
@@ -60,50 +61,50 @@ fpath_db = FPATHS['data']['app']['vector-db_dir']
         
         
 
-if 'retriever' not in st.session_state:
-    # retriever  = load_vector_database( fpath_db,fpath_llm_csv, k=8, use_previous=False, as_retriever=True)    
-    if os.path.exists(fpath_db):
-        retriever = fn.load_vector_database(fpath_db, fpath_llm_csv, use_previous=True, as_retriever=True)
-    else:
-        retriever = fn.load_vector_database(fpath_db, fpath_llm_csv, use_previous=False, as_retriever=True)
+# if 'retriever' not in st.session_state:
+#     # retriever  = load_vector_database( fpath_db,fpath_llm_csv, k=8, use_previous=False, as_retriever=True)    
+#     if os.path.exists(fpath_db):
+#         retriever = fn.load_vector_database(fpath_db, fpath_llm_csv, use_previous=True, as_retriever=True)
+#     else:
+#         retriever = fn.load_vector_database(fpath_db, fpath_llm_csv, use_previous=False, as_retriever=True)
     
-    st.session_state['retriever'] = retriever
+#     st.session_state['retriever'] = retriever
 
 
 
 # Create chat container early
     
-def display_metadata(meta_df,iloc=0, include_details=False):
-    # product = meta_df.iloc[iloc]
-    # md = "#### Product Being Reviewed"
-    md = ""
-    md += f'\n- Product Title:\n***\"{product["Title (Raw)"]}\"***'
-    # md += f"<p><img src='{product['Product Image']}' width=300px></p>"
-    md += f'\n- Brand: {product["Brand"]}'
-    md += f"\n- Price: {product['Price']}"
-    md += f"\n- Ranked {product['Rank']} (2018)"
+# def display_metadata(meta_df,iloc=0, include_details=False):
+#     # product = meta_df.iloc[iloc]
+#     # md = "#### Product Being Reviewed"
+#     md = ""
+#     md += f'\n- Product Title:\n***\"{product["Title (Raw)"]}\"***'
+#     # md += f"<p><img src='{product['Product Image']}' width=300px></p>"
+#     md += f'\n- Brand: {product["Brand"]}'
+#     md += f"\n- Price: {product['Price']}"
+#     md += f"\n- Ranked {product['Rank']} (2018)"
 
-    md += f"\n- Categories:\n    - "
-    md += "; ".join(product['Categories'])
-    # md += 
-    # md += f"\n- Categories:{', '.join(product['Categories'])}"
+#     md += f"\n- Categories:\n    - "
+#     md += "; ".join(product['Categories'])
+#     # md += 
+#     # md += f"\n- Categories:{', '.join(product['Categories'])}"
     
     
-    return md
+#     return md
 
 
-def load_product_info(fpath):
-    import json
-    with open(fpath,'r') as f:
-        product_json = json.load(f)
+# def load_product_info(fpath):
+#     import json
+#     with open(fpath,'r') as f:
+#         product_json = json.load(f)
         
-    product_string = "Product Info:\n"
-    for k,v in product_json.items():
-        if k.lower()=='description':
-            continue
-        product_string+=f"\n{k} = {v}\n"
+#     product_string = "Product Info:\n"
+#     for k,v in product_json.items():
+#         if k.lower()=='description':
+#             continue
+#         product_string+=f"\n{k} = {v}\n"
         
-    return product_string
+#     return product_string
     
 ## Title /header
 # st.header("Exploratory Data Analysis of Amazon Reviews ")
@@ -155,40 +156,47 @@ product= meta_df.iloc[0]
 # st.divider()
 # st.subheader("Exploratory Analysis ")
 st.divider()
-show_product= st.checkbox("Show Product Information", value=False)
+# show_product= st.checkbox("Show Product Information", value=False)
+# with st.container(border=True):
+# if show_product==True:
+with st.expander("Product Information",expanded=True):
+    # st.subheader("Product Information")
+        col1, col2 = st.container(border=True).columns(2)
+        col1.markdown(fn.display_metadata(meta_df))
+        col2.image(product['Product Image'], width=300)
 
-if show_product==True:
-    st.subheader("Product Information")
+# if show_product==True:
+#     st.subheader("Product Information")
 
 
-    # st.markdown(f'Product Title: ***{product["Title (Raw)"]}***')
-    # st.divider()
-    col1,col2 = st.columns(2)
+#     # st.markdown(f'Product Title: ***{product["Title (Raw)"]}***')
+#     # st.divider()
+#     col1,col2 = st.columns(2)
 
-    # @st.cache_data
-    def display_metadata(meta_df,iloc=0):
-        # product = meta_df.iloc[iloc]
-        # md = "#### Product Being Reviewed"
-        md = ""
-        md += f'\n- Product Title:\n***\"{product["Title (Raw)"]}\"***'
-        # md += f"<p><img src='{product['Product Image']}' width=300px></p>"
-        md += f'\n- Brand: {product["Brand"]}'
-        md += f"\n- Price: {product['Price']}"
-        md += f"\n- Ranked {product['Rank']} (2018)"
+#     # @st.cache_data
+#     def display_metadata(meta_df,iloc=0):
+#         # product = meta_df.iloc[iloc]
+#         # md = "#### Product Being Reviewed"
+#         md = ""
+#         md += f'\n- Product Title:\n***\"{product["Title (Raw)"]}\"***'
+#         # md += f"<p><img src='{product['Product Image']}' width=300px></p>"
+#         md += f'\n- Brand: {product["Brand"]}'
+#         md += f"\n- Price: {product['Price']}"
+#         md += f"\n- Ranked {product['Rank']} (2018)"
 
-        md += f"\n- Categories:\n    - "
-        md += "; ".join(product['Categories'])
-        # md += f"\n- Categories:{', '.join(product['Categories'])}"
+#         md += f"\n- Categories:\n    - "
+#         md += "; ".join(product['Categories'])
+#         # md += f"\n- Categories:{', '.join(product['Categories'])}"
         
         
-        return md
+#         return md
 
-    col1.markdown(display_metadata(meta_df))
-    col2.image(product['Product Image'],width=300)
-else:
-    col1,col2 =st.columns(2)
-    col1.empty()
-    col2.empty()
+#     col1.markdown(display_metadata(meta_df))
+#     col2.image(product['Product Image'],width=300)
+# else:
+#     col1,col2 =st.columns(2)
+#     col1.empty()
+#     col2.empty()
 
 
 
@@ -224,14 +232,13 @@ add_stopwords_str = settings_menu.text_area("Enter list of words to exclude:",va
 stopwords_list = fn.get_stopwords_from_string(add_stopwords_str)
 
 
-st.sidebar.divider()
+# st.sidebar.divider()
 
 
 
 ## word clouds
 
 st.divider()
-st.subheader("Word Clouds")
 
 
 
@@ -239,9 +246,12 @@ st.subheader("Word Clouds")
 @st.cache_data
 def fn_get_groups_freqs_wordclouds(df,ngrams=ngram_n, as_freqs=True, 
                                         group_col='target-rating', text_col = text_col_selection,
-                                        stopwords=stopwords_list):
-    kwargs = locals()
-    group_texts = fn.get_groups_freqs_wordclouds(**kwargs) #testing stopwords
+                                        stopwords=stopwords_list,**kwargs):
+    # kws = locals()
+    kws = dict(df=df, ngrams=ngrams, as_freqs=as_freqs, group_col=group_col, text_col = text_col,
+               stopwords=stopwords)
+    kws.update(kwargs)
+    group_texts = fn.get_groups_freqs_wordclouds(**kws) #testing stopwords
     return group_texts
 
 
@@ -259,65 +269,110 @@ def download_fig(fig,):
 
 # reset_button  = chat_options.button("Clear",on_click=reset)
 
+## Making all the containers
+st.header("Word Clouds")
+text_menu = st.container(border=True)
+fig_container = st.container()
+st.divider()
+## Add creating ngrams
+st.header('N-Gram Bar Graphs')
+ngram_menu = st.container(border=True)
+ngram_fig_container = st.container()
 
 
-with st.container(border=True):
-    c1, c2,c3 =st.columns(3)
-    c1.markdown("#### Text Preprocesing")
-    c1.markdown(">👈 *Change Text Preprocessing Options on the sidebar.*")
-    
-    c1.markdown("- Recommended Settings:\n    - Tokenization = 'Original Text' \n    - ngrams=Bigrams/Trigrams")
-    group_texts = fn_get_groups_freqs_wordclouds(df,ngrams=ngram_n, as_freqs=True,group_col='target-rating', text_col = text_col_selection,
-                                        stopwords=stopwords_list )
+# with 
+c1, c2,c3 =text_menu.columns(3)
+c1.markdown("#### Text Preprocesing")
+c1.markdown(">👈 *Change Text Preprocessing Options on the sidebar.*")
+with text_menu.expander("Recommended Text Preprocessing Settings"):
+    ce1, ce2 = st.columns(2)
+    ce1.markdown("For '*Select Tokenization*':\n- Use 'Original Text'")# \n    - ngrams=Bigrams/Trigrams")
+    ce2.markdown("For '*Select ngrams*':\n- Use 'Bigrams' or 'Trigrams'")# \n    - ngrams=Bigrams/Trigrams")
+
 # preview_group_freqs(group_texts)
 
-    # col1, col2 = st.columns(2)
-    c2.markdown("##### WordCloud Options")
-    min_font_size = c2.number_input("Minumum Font Size",min_value=4, max_value=50,value=6, step=1)
-    max_words = c2.number_input('Maximum # of Words', min_value=10, max_value=1000, value=200, step=5)
-    fig  = fn.make_wordclouds_from_freqs(group_texts,stopwords=stopwords_list,min_font_size=min_font_size, max_words=max_words,
-                                     figsize=(16,10))
-    c3.markdown('##### Download word cloud image.')
-    filename = c3.text_input("Filename (png)", value='wordcloud-comparison.png')
-    download_fig_button =c3.download_button("Download image.", data =download_fig(fig),file_name=filename,mime="image/png", )
+# col1, col2 = st.columns(2)
+c2.markdown("##### WordCloud Options")
+min_font_size = c2.number_input("Minumum Font Size",min_value=4, max_value=50,value=6, step=1)
+max_words = c2.number_input('Maximum # of Words', min_value=10, max_value=1000, value=200, step=5)
 
-with st.container():
-    st.pyplot(fig)
+c3.markdown('##### Download figure.')
+fig = plt.figure()
+filename = c3.text_input("Filename (png)", value='wordcloud-comparison.png')
+download_fig_button =c3.download_button("Download image.", data =download_fig(fig),file_name=filename,mime="image/png", )
+
+
+with fig_container:
+    with st.spinner("Creating Word Clouds..."):
+        group_texts = fn_get_groups_freqs_wordclouds(df,ngrams=ngram_n, as_freqs=True,group_col='target-rating', text_col = text_col_selection,
+                                    stopwords=stopwords_list )
+
+        fig  = fn.make_wordclouds_from_freqs(group_texts,stopwords=stopwords_list,min_font_size=min_font_size, max_words=max_words,
+                                            figsize=(16,10))
+        # with fig_container:
+        fig_container.pyplot(fig)
 
 st.divider()
 
 
-## Add creating ngrams
-st.subheader('N-Gram Bar Graphs')
+# ## Add creating ngrams∏
+# st.subheader('N-Gram Bar Graphs')
+# ngram_menu = st.container(border=True)
+# ngram_fig_container = st.container()
 
-ngram_menu = st.container(border=True)
-with ngram_menu:
-    col1,col2,col3 = ngram_menu.columns(3)
-    col1.markdown("> 👈 *Change Text Preprocessing Options on the sidebar*")
-    col1.markdown("- Recommended Settings:\n    - Tokenization = 'Lemmatized Text'\n    - ngrams=Trigrams")
+# with ngram_menu:
+col1,col2,col3 = ngram_menu.columns(3)
+col1.markdown("> 👈 *Change Text Preprocessing Options on the sidebar*")
 
-    # ngrams = st.radio('n-grams', [2,3,4],horizontal=True,index=1)
-    # top_n = st.select_slider('Compare Top # Ngrams',[10,15,20,25],value=15)
-    top_n = col2.slider("Compare Top # Ngrams", min_value=5, max_value=100, step=5,value=20)
-    use_plotly = col2.checkbox("Interactive graph", value=False)
-    col3.markdown('##### Download word cloud image.')
-    filename = col3.text_input("Filename (png)", key='flilename_mgrams',value='ngram-comparison.png')
-    download_fig_button_ngram =col3.download_button("Download image.",key='download_ngram', data =download_fig(fig),file_name=filename,mime="image/png",)
-    ## Compare n-grams
-    
-ngrams_df = fn.show_ngrams(df,top_n=top_n, ngrams=ngram_n,text_col_selection=text_col_selection,stopwords_list=stopwords_list)
-# st.dataframe(ngrams_df)
+with ngram_menu.expander("Recommended N-Gram Settings"):
+    # st.markdown("- Recommended Settings:\n    - Tokenization = 'Lemmatized Text'\n    - ngrams=Trigrams")
+    ce1, ce2 = st.columns(2)
+    ce1.markdown("For '*Select Tokenization*':\n- Use 'Lemmatized Text'")# \n    - ngrams=Bigrams/Trigrams")
+    ce2.markdown("For '*Select ngrams*':\n- Use 'Trigrams'")# \n    - ngrams=Bigrams/Trigrams")
 
-if use_plotly:
-    fig = fn.plotly_group_ngrams_df(ngrams_df,show=False, title=f"Top {top_n} Most Common ngrams",width=800)
-    st.plotly_chart(fig,)
-else:
-    fig = fn.plot_group_ngrams(ngrams_df,   group1_colname='Low', group2_colname="High", top_n=top_n)#,figsize=(8,12))
-    st.pyplot(fig,use_container_width=True)
-    
-## add chat gpt
-chat_container = st.container()
-button_ai = st.button("Interpret with ChatGPT")
+
+ngram_fig = plt.figure()
+# ngrams = st.radio('n-grams', [2,3,4],horizontal=True,index=1)
+# top_n = st.select_slider('Compare Top # Ngrams',[10,15,20,25],value=15)
+top_n = col2.slider("Compare Top # Ngrams", min_value=5, max_value=100, step=5,value=20)
+use_plotly = col2.checkbox("Interactive graph", value=False)
+col3.markdown('##### Download figure.')
+filename = col3.text_input("Filename (png)", key='flilename_mgrams',value='ngram-comparison.png')
+download_fig_button_ngram =col3.download_button("Download image.",key='download_ngram', data =download_fig(ngram_fig),file_name=filename,mime="image/png",)
+## Compare n-grams
+
+
+
+# # @st.cache_data
+# def show_ngrams(df, top_n, ngrams, text_col_selection, stopwords_list,
+#                  grp1_key="Low", grp2_key="High",measure='raw_freq' ,
+#                min_freq=1):
+
+#     group_texts = fn_get_groups_freqs_wordclouds(df, ngrams=1, #grp1_key=grp1_key, grp2_key =grp2_key,
+#                                               as_freqs=False, as_tokens=True, group_col='target-rating', 
+#                                               text_col = text_col_selection,
+#                                          stopwords=stopwords_list) #testing stopwords
+#     # try:
+#     return  fn.compare_ngram_measures_df(group_texts[grp1_key], group_texts[grp2_key],
+#                                             measure=measure, ngrams=ngrams,min_freq=min_freq,top_n=top_n,
+#                                         group1_name=grp1_key, group2_name=grp2_key)
+#     # except Exception as e:
+#     #     display(e)
+with ngram_fig_container:
+    with st.spinner("Creating ngram graphs..."):        
+        ngrams_df =fn.show_ngrams(df,top_n=top_n, ngrams=ngram_n,text_col_selection=text_col_selection,stopwords_list=stopwords_list)
+        # st.dataframe(ngrams_df)
+
+        if use_plotly:
+            ngram_fig = fn.plotly_group_ngrams_df(ngrams_df,show=False, title=f"Top {top_n} Most Common ngrams",width=800)
+            ngram_fig_container.plotly_chart(ngram_fig,)
+        else:
+            ngram_fig = fn.plot_group_ngrams(ngrams_df,   group1_colname='Low', group2_colname="High", top_n=top_n)#,figsize=(8,12))
+            ngram_fig_container.pyplot(ngram_fig,use_container_width=True)
+            
+# ## add chat gpt
+# chat_container = st.container()
+# button_ai = st.button("Interpret with ChatGPT")
 
 
         
@@ -326,7 +381,7 @@ def get_template_string(context_low=ngrams_df.loc[:,'Low'].to_string(), context_
     # task_prompt_dict = get_task_options(options_only=False)
     # system_prompt = task_prompt_dict[selected_task]
     template_starter = f"You are a helpful data analyst for answering questions about what customers said about a specific  Amazon product using only content from use reviews."
-    product_string = load_product_info(FPATHS['data']['app']['product-metadata-llm_json'])
+    product_string = fn.load_product_info(FPATHS['data']['app']['product-metadata-llm_json'])
 
     product_template = f" Assume all user questions are asking about the content in the user reviews. Note the product metadata is:\n```{product_string}```\n\n"
     template+=product_template
@@ -406,9 +461,11 @@ def fake_streaming(response):
 #     st.session_state['agent'] = get_agent(retriever=s)
 #     response = st.session_state['agent'].invoke({'input'})
 
-
-st.sidebar.subheader("Author Information")
-with open("app-assets/author-info.html") as f:
+with open("app-assets/author-info.md") as f:
     author_info = f.read()
-with st.sidebar.container():
-    components.html(author_info)#"""
+    
+with st.sidebar.container(border=True):
+    st.subheader("Author Information")
+
+    st.markdown(author_info, unsafe_allow_html=True)
+    

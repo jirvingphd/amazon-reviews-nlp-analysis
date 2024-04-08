@@ -1,16 +1,17 @@
 from .app_functions import *
+from .factory import AgentFactory
+# import streamlit as st
 
-
-def load_filepaths_json(fname="config/filepaths.json"):
+def load_filepaths_json(fname="config/filepaths.json", verbose=False):
     ##Load in the data
     import json
     with open(fname) as f:
         FPATHS = json.load(f)
-    print("Top-Level Keys in FPATHS dict:")
-    # [print(f'- {k}') for k in FPATHS.keys()]
-    print(FPATHS.keys())
+    if verbose:
+        print("Top-Level Keys in FPATHS dict:")
+        # [print(f'- {k}') for k in FPATHS.keys()]
+        print(FPATHS.keys())
     return FPATHS
-
 
 # from IPython.display import display
 def mute_color(color_name, saturation_adjustment=0.5, lightness_adjustment=1.2):
@@ -142,7 +143,6 @@ def get_ngram_measures_df(tokens, ngrams=2, measure='raw_freq', top_n=None, min_
         return df_ngrams.head(top_n)
     else:
         return df_ngrams
-
 
 
 def compare_ngram_measures_df(group1_tokens, group2_tokens, ngrams=2,

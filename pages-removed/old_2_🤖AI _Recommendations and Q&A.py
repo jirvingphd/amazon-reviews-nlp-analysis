@@ -19,6 +19,9 @@ from langchain.memory import ConversationBufferMemory
 
 #https://github.com/langchain-ai/streamlit-agent/blob/main/streamlit_agent/chat_with_documents.py
 from langchain.memory.chat_message_histories.streamlit import StreamlitChatMessageHistory
+# Changing the Layout
+st.set_page_config( #layout="wide", 
+                   page_icon="🤖AI Recommendations")
 
 import openai, os
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -47,6 +50,10 @@ def load_summaries(fpath):
     return summaries
 
 summaries = load_summaries(FPATHS['results']['review-summary-01_json'])
+# df = load_df(FPATHS['data']['processed-nlp']['processed-reviews-with-target_joblib'])
+meta_df = load_metadata(FPATHS['data']['app']['product-metadata_json'])
+product= meta_df.iloc[0]
+
 
 
 ai_avatar  = "🤖"
@@ -55,6 +62,57 @@ user_avatar = "💬"
 
 st.header("Summaries & Recommendations")
 st.markdown('We leveraged pre-trained summarization models from HuggingFace transformers to summarize all low and all high reviews. These summaries will be the contextual information that ChatGPT will use to provide the final conclusions.')
+
+st.divider()
+def load_product_info(fpath):
+    import json
+    with open(fpath,'r') as f:
+        product_json = json.load(f)
+        
+    product_string = "Product Info:\n"
+    for k,v in product_json.items():
+        if k.lower()=='description':
+            continue
+        product_string+=f"\n{k} = {v}\n"
+        
+    return product_string
+
+
+show_product= st.checkbox("Show Product Information", value=True)
+
+if show_product==True:
+    st.subheader("Product Information")
+
+
+    # st.markdown(f'Product Title: ***{product["Title (Raw)"]}***')
+    # st.divider()
+    col1,col2 = st.columns(2)
+
+    # @st.cache_data
+    def display_metadata(meta_df,iloc=0):
+        # product = meta_df.iloc[iloc]
+        # md = "#### Product Being Reviewed"
+        md = ""
+        md += f'\n- Product Title:\n***\"{product["Title (Raw)"]}\"***'
+        # md += f"<p><img src='{product['Product Image']}' width=300px></p>"
+        md += f'\n- Brand: {product["Brand"]}'
+        md += f"\n- Price: {product['Price']}"
+        md += f"\n- Ranked {product['Rank']} (2018)"
+
+        md += f"\n- Categories:\n    - "
+        md += "; ".join(product['Categories'])
+        # md += f"\n- Categories:{', '.join(product['Categories'])}"
+        
+        
+        return md
+
+    col1.markdown(display_metadata(meta_df))
+    col2.image(product['Product Image'],width=300)
+else:
+    col1,col2 =st.columns(2)
+    col1.empty()
+    col2.empty()
+
 
 st.subheader("Summarized Low & High Reviews")
 st.write("(made with HuggingFace transformers)")
@@ -74,37 +132,25 @@ st.subheader("High Reviews")
 st.markdown(">" + summaries['summary-high'])
 st.divider()
 
-# def display_metadata(meta_df,iloc=0, include_details=False):
-#     # product = meta_df.iloc[iloc]
-#     # md = "#### Product Being Reviewed"
-#     md = ""
-#     md += f'\n- Product Title:\n***\"{product["Title (Raw)"]}\"***'
-#     # md += f"<p><img src='{product['Product Image']}' width=300px></p>"
-#     md += f'\n- Brand: {product["Brand"]}'
-#     md += f"\n- Price: {product['Price']}"
-#     md += f"\n- Ranked {product['Rank']} (2018)"
+def display_metadata(meta_df,iloc=0, include_details=False):
+    # product = meta_df.iloc[iloc]
+    # md = "#### Product Being Reviewed"
+    md = ""
+    md += f'\n- Product Title:\n***\"{product["Title (Raw)"]}\"***'
+    # md += f"<p><img src='{product['Product Image']}' width=300px></p>"
+    md += f'\n- Brand: {product["Brand"]}'
+    md += f"\n- Price: {product['Price']}"
+    md += f"\n- Ranked {product['Rank']} (2018)"
 
-#     md += f"\n- Categories:\n    - "
-#     md += "; ".join(product['Categories'])
-#     # md += 
-#     # md += f"\n- Categories:{', '.join(product['Categories'])}"
+    md += f"\n- Categories:\n    - "
+    md += "; ".join(product['Categories'])
+    # md += 
+    # md += f"\n- Categories:{', '.join(product['Categories'])}"
     
     
-#     return md
+    return md
 
 
-# def load_product_info(fpath):
-#     import json
-#     with open(fpath,'r') as f:
-#         product_json = json.load(f)
-        
-#     product_string = "Product Info:\n"
-#     for k,v in product_json.items():
-#         if k.lower()=='description':
-#             continue
-#         product_string+=f"\n{k} = {v}\n"
-        
-#     return product_string
 
 @st.cache_resource
 def load_vector_database(fpath_db, fpath_csv=None, metadata_columns = ['reviewerID'],
@@ -165,8 +211,9 @@ if os.path.exists(fpath_db):
 else:
     retriever = load_vector_database(fpath_db, fpath_llm_csv, use_previous=False, as_retriever=True)
 
-if 'retriever' not in st.session_state:
-    st.session_state['retriever'] = retriever
+
+# if 'retriever' not in st.session_state:
+#     st.session_state['retriever'] = retriever
 
 # Create chat container early
 # st
@@ -174,9 +221,10 @@ st.header("AI Recommendations")
 summary_container = st.container()
 
 st.divider()
-st.header("Q&A")
 
 chat_container = st.container()
+chat_container.header("Q&A")
+output_container = chat_container.container(border=True)
 
 def get_template_string_reviews():
      # Create template with product info
@@ -234,7 +282,7 @@ def get_agent(retriever=None,fpath_db=FPATHS['data']['app']['vector-db_dir'], k=
             
             
 def reset_agent(#fpath_db = FPATHS['data']['app']['vector-db_dir'],
-                retriever=st.session_state['retriever'] , 
+                retriever=retriever, #st.session_state['retriever'] , 
                 starter_message = "Hello, there! Enter your question here and I will check the full reviews database to provide you the best answer.",
                get_agent_kws={}):
     # fpath_db
@@ -278,7 +326,7 @@ def get_task_options(options_only=False):
     task_prompt_dict= {
         # "Summary of Customer Sentiment":'Provide a summary list of what 1-star reviews did not like and a summary of what did 5-star reviews liked.',
                    'Product Recommendations':'Provide a list of 3-5 actionable business recommendations on how to improve the product.',
-                   'Marketing Recommendations':'provide a list of 3-5 recommendations for the marketing team to on how to better set customer expectations before purchasing the product or to better target the customers who will enjoy it.'}
+                   'Marketing Recommendations':'Provide a list of 3-5 recommendations for the marketing team to on how to better set customer expectations before purchasing the product or to better target the customers who will enjoy it.'}
     if options_only:
         return list(task_prompt_dict.keys())
     else:
@@ -302,11 +350,12 @@ def get_template_string_interpret(context_low, context_high, context_type='BERT-
 
 if 'agent' not in st.session_state:
     # agent = get_agent(retriever)
-    st.session_state['agent'] =reset_agent(retriever=st.session_state['retriever'] )
+    with output_container:
+        st.session_state['agent'] =reset_agent(retriever=retriever)#st.session_state['retriever'] )
 
 
 if 'agent-summarize' not in st.session_state:
-    st.session_state['agent-summarize'] = get_agent(retriever=st.session_state['retriever'] ,
+    st.session_state['agent-summarize'] = get_agent(retriever=retriever,#st.session_state['retriever'] ,
         template_string_func=lambda: get_template_string_interpret(context_low=summaries['summary-low'],
                                                                    context_high=summaries['summary-high'])
     )
@@ -333,27 +382,29 @@ with summary_container:
         show_recs = col2.button("Get response.")
     if show_recs:
         prompt_text =  task_options[selected_task]
+        st.chat_message("user", avatar=user_avatar).write(prompt_text)
+        
         response = st.session_state['agent-summarize'].invoke({'input':prompt_text})
 
         
         # print_history(st.session_state['agent-summarize'])
-        st.chat_message("user", avatar=user_avatar).write(prompt_text)
-        
+
         # response = st.session_state['agent'].invoke({"input":prompt_text})
         st.chat_message('assistant', avatar=ai_avatar).write(fake_streaming(response['output']))
 
 
 
 with chat_container:
-    output_container = st.container(border=True)
+    # output_container = st.container(border=True)
     user_text = st.chat_input(placeholder="Enter your question here.")
 
-    if user_text:
-        with output_container:
+
+    with output_container:
             
-            print_history(st.session_state['agent'])
+        print_history(st.session_state['agent'])
+        if user_text:
             st.chat_message("user", avatar=user_avatar).write(user_text)
-            
+        
             response = st.session_state['agent'].invoke({"input":user_text})
             st.chat_message('assistant', avatar=ai_avatar).write(fake_streaming(response['output']))
 
@@ -361,5 +412,13 @@ with chat_container:
 reset_chat = st.sidebar.button("Reset Chat?")
 if reset_chat:
     with output_container:
-
-        st.session_state['agent'] =reset_agent(st.session_state['retriever'] )
+        st.session_state['agent'] =reset_agent(retriever=retriever)#st.session_state['retriever'] )
+        # print_history(st.session_state['agent'])
+        
+st.sidebar.subheader("Author Information")
+    
+with open("app-assets/author-info.md") as f:
+    author_info = f.read()
+    
+with st.sidebar.container():
+    st.markdown(author_info, unsafe_allow_html=True)

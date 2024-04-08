@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 import os
 import joblib
-import tensorflow as tf
+# import tensorflow as tf
 from PIL import Image
 import custom_functions as fn
 import plotly.express as px
@@ -12,14 +12,15 @@ import plotly.io as pio
 pio.templates.default='streamlit'
 # Changing the Layout
 st.set_page_config( layout="wide", 
-                   page_icon="⭐️Amazon Reviews NLP EDA")
+                   page_icon='📈',
+                   page_title="Scattertext Explorer")
 
     
-st.sidebar.subheader("Author Information")
-with open("app-assets/author-info.html") as f:
-    author_info = f.read()
-with st.sidebar.container():
-    components.html(author_info)#"""
+# st.sidebar.subheader("Author Information")
+# with open("app-assets/author-info.html") as f:
+#     author_info = f.read()
+# with st.sidebar.container():
+#     components.html(author_info)#"""
     
 # Get Fpaths
 @st.cache_data
@@ -87,3 +88,13 @@ with st.spinner("Loading explorer..."):
         components.html(html_to_show, width=1200, height=800, scrolling=True)
     # st.divider()
 st.markdown('### ☝️ Scroll up to return to scatterplot')
+
+
+with open("app-assets/author-info.md") as f:
+    author_info = f.read()
+    
+with st.sidebar.container(border=True):
+    st.subheader("Author Information")
+
+    st.markdown(author_info, unsafe_allow_html=True)
+    
