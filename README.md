@@ -10,7 +10,7 @@
     <img src="https://i.stack.imgur.com/gVE0j.png" alt="linkedin"> LinkedIn
   </a> </li>
   <li><a href="https://github.com/jirvingphd" rel="nofollow noreferrer">
-    <img src="https://i.stack.imgur.com/tskMh.png" alt="github"> Github
+     Github
   </a></li>
 </ul>
 </blockquote>
