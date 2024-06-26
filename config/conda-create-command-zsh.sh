@@ -32,7 +32,8 @@ conda install -c conda-forge spacy
 python -m spacy download en_core_web_sm
 
 pip install scipy==1.10.1
-
+pip install missingno seaborn
+pip install pydantic langchain_openai langchain_core
 
 # Deactivate the environment
 conda deactivate
