@@ -302,13 +302,6 @@ LDA topic modeling has identified distinct themes within the reviews. High-ratin
 
 
 
-
-```python
-display(Markdown(f"<img src=\"{FPATHS['eda']['lda']['lda-viz-screenshot-high_png']}\">"))
-
-```
-
-
 <img src="eda/lda-viz-screenshot-high.png">
 
 
