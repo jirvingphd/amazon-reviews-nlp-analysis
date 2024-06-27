@@ -32,8 +32,13 @@ conda install -c conda-forge spacy
 python -m spacy download en_core_web_sm
 
 pip install scipy==1.10.1
-pip install missingno seaborn
+pip install missingno seaborn tabulate
 pip install pydantic langchain_openai langchain_core
+pip install tensorflow-macos
+pip install tensorflow-metal
+pip install -U protobuf
+pip install transformers
+# pip install tf-keras
 
 # Deactivate the environment
 conda deactivate
