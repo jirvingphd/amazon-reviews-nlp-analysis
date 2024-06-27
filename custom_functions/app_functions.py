@@ -1,5 +1,5 @@
 import os
-from langchain.cache import InMemoryCache
+# from langchain.cache import InMemoryCache
 from langchain_community.document_loaders import CSVLoader
 from langchain.memory import ChatMessageHistory, ConversationBufferMemory
 from langchain_openai.embeddings import OpenAIEmbeddings
@@ -18,6 +18,8 @@ from langchain.memory import ConversationBufferMemory
 from langchain import hub
 from langchain.tools.retriever import create_retriever_tool
 import streamlit as st
+import matplotlib.pyplot as plt
+from sklearn.metrics import classification_report, ConfusionMatrixDisplay
 import json
 import json
 import joblib
@@ -283,3 +285,115 @@ def load_vector_database(fpath_db, fpath_csv=None, metadata_columns=['reviewerID
         return db.as_retriever(k=k, **retriever_kwargs)
     else:
         return db
+    
+    
+    
+    
+
+
+def classification_metrics_streamlit(y_true, y_pred, label='',
+                           output_dict=False, figsize=(8,4),
+                           normalize='true', cmap='Blues',
+                           colorbar=False,values_format=".2f"):
+    """
+    This function calculates and displays classification metrics for a given set of true labels and predicted labels.
+    
+    Parameters:
+    - y_true (array-like): The true labels.
+    - y_pred (array-like): The predicted labels.
+    - label (str): Optional label for the classification metrics.
+    - output_dict (bool): Whether to return the classification report as a dictionary.
+    - figsize (tuple): The size of the figure to display the confusion matrices.
+    - normalize (str): The normalization method for the confusion matrix. Options are 'true', 'pred', 'all', or None.
+    - cmap (str): The color map for the confusion matrix.
+    - colorbar (bool): Whether to display a colorbar for the confusion matrix.
+    - values_format (str): The format for displaying values in the confusion matrix.
+    
+    Returns:
+    - final_report (str): The final classification report as a string.
+    - fig (Figure): The figure object containing the confusion matrices.
+    """
+    # Get the classification report
+    report = classification_report(y_true, y_pred)
+    
+    ## Save header and report
+    header = "-"*70
+    final_report = "\n".join([header,f" Classification Metrics: {label}", header,report,"\n"])
+    
+    
+    ## CONFUSION MATRICES SUBPLOTS
+    fig, axes = plt.subplots(ncols=2, figsize=figsize)
+    
+    # Create a confusion matrix  of raw counts (left subplot)
+    ConfusionMatrixDisplay.from_predictions(y_true, y_pred,
+                                            normalize=None, 
+                                            cmap='gist_gray_r',# Updated cmap
+                                            values_format="d", 
+                                            colorbar=colorbar,
+                                            ax = axes[0]);
+    axes[0].set_title("Raw Counts")
+    
+    # Create a confusion matrix with the data with normalize argument 
+    ConfusionMatrixDisplay.from_predictions(y_true, y_pred,
+                                            normalize=normalize,
+                                            cmap=cmap, 
+                                            values_format=values_format, #New arg
+                                            colorbar=colorbar,
+                                            ax = axes[1]);
+    axes[1].set_title("Normalized Confusion Matrix")
+    
+    # Adjust layout and show figure
+    fig.tight_layout()
+
+    return final_report, fig
+
+
+def evaluate_classification_streamlit(model, X_train, y_train, X_test, y_test,
+                                     joblib_fpath=None, cmap_train="Blues",cmap_test="Reds"):
+    """
+    Evaluate a classification model using Streamlit.
+
+    Parameters:
+    - model: The trained classification model.
+    - X_train: The training data features.
+    - y_train: The training data labels.
+    - X_test: The test data features.
+    - y_test: The test data labels.
+    - joblib_fpath: The file path to save the model results using joblib.
+    - cmap_train: The color map for the training data classification metrics plot. Default is "Blues".
+    - cmap_test: The color map for the test data classification metrics plot. Default is "Reds".
+
+    Returns:
+    - results_dict: A dictionary containing the model, training and test classification metrics.
+
+    This function evaluates the performance of a classification model using Streamlit. It calculates and displays
+    the classification metrics for both the training and test data, including the classification report and confusion matrix.
+    The results are saved to a file using joblib.
+
+    Example usage:
+    results = evaluate_classification_streamlit(model, X_train, y_train, X_test, y_test, "model_results.joblib")
+    """
+
+    ## Save ML Model Results
+    y_hat_train = model.predict(X_train)
+    report_train, fig_train = classification_metrics_streamlit(y_train, y_hat_train, cmap=cmap_train,
+                                                            label="Training Data")
+    print(report_train)
+    plt.show()
+    y_hat_test = model.predict(X_test)
+    report_test, fig_test = classification_metrics_streamlit(y_test, y_hat_test,cmap=cmap_test,
+                                                             label="Test Data")
+    print(report_test)
+    plt.show()
+
+
+    results_dict = {
+        "model": model,
+        "train": {"classification_report": report_train, "confusion_matrix": fig_train},
+        "test": {"classification_report": report_test, "confusion_matrix": fig_test},
+    }
+    
+    if joblib_fpath is not None:
+        joblib.dump(results_dict, joblib_fpath, compress=9)
+        print(f"- Succesfully saved model to {joblib_fpath}.")
+    return results_dict
