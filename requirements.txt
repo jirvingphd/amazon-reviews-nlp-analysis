@@ -1,11 +1,11 @@
 streamlit==1.31.1
 # chromadb==0.3.29
 joblib==1.4.2
-langchain==0.2.6
-langchain_community==0.2.6
-langchain_core==0.2.6
-langchain_openai==0.1.10
-langchainhub==0.1.14
+langchain
+langchain_community
+langchain_core
+langchain_openai
+langchainhub
 lime==0.2.0.1
 Pillow==9.5.0
 # Pillow==10.2.0
