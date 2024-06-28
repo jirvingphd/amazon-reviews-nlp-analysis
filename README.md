@@ -27,8 +27,8 @@ ___
 <img src="images/streamlit-app-preview.png" width=1000>
 
 
-- Explore the interactive visualizations and analysis results through the Streamlit dashboard: [Amazon Reviews NLP Analysis & Predictions](https://amazon-reviews-nlp-analysis-predictions.streamlit.app/)
-- [https://amazon-reviews-nlp-analysis-predictions.streamlit.app/](https://amazon-reviews-nlp-analysis-predictions.streamlit.app/)
+- Explore the interactive visualizations and analysis results through the Streamlit dashboard: [Amazon Reviews NLP Analysis & Predictions](https://amazon-reviews-nlp-analysis.streamlit.app/)
+- [https://amazon-reviews-nlp-analysis.streamlit.app/](https://amazon-reviews-nlp-analysis.streamlit.app/)
 
 
 ___
@@ -488,10 +488,9 @@ ___
 
 ## Companion Streamlit Dashboard
 
-Explore the interactive visualizations and analysis results through the Streamlit dashboard: [Amazon Reviews NLP Analysis & Predictions](https://amazon-reviews-nlp-analysis-predictions.streamlit.app/)
+- Explore the interactive visualizations and analysis results through the Streamlit dashboard: [Amazon Reviews NLP Analysis & Predictions](https://amazon-reviews-nlp-analysis.streamlit.app/)
+- [https://amazon-reviews-nlp-analysis.streamlit.app/](https://amazon-reviews-nlp-analysis.streamlit.app/)
 
-
-- [https://amazon-reviews-nlp-analysis-predictions.streamlit.app/](https://amazon-reviews-nlp-analysis-predictions.streamlit.app/)
 
 
 <img src="images/streamlit-app-preview.png" width=1000>
