@@ -266,7 +266,7 @@ def load_vector_database(fpath_db, fpath_csv=None, metadata_columns=['reviewerID
         try:
             db = FAISS.load_local(fpath_db, embedding_func, allow_dangerous_deserialization=True)
         except: 
-            db = FAISS.load_local(fpath_db, embedding_func)
+            db = FAISS.load_local(fpath_db, embedding_func, allow_dangerous_deserialization=True)
     else:
         print("Creating embeddings/Chromadb database")
         if fpath_csv == None:
